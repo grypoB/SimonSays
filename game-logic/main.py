@@ -2,6 +2,28 @@ import serial
 import datetime
 import random
 
+class Output:
+    def idling(self):
+        print "idling"
+
+    def flash(self):
+        print "flashing boys!"
+
+    def beam(self, start, end):
+        if start==0:
+            start = "crystal"
+        print "beaming ", start, " -> ", end
+
+    def win(self):
+        print "Champion ..."
+        print "Champion ..."
+        print "Champion at the Puntnam county spelling beeeeeeeeeeee"
+
+    def game_over(self):
+        print "Game over..."
+        print "yeah, game over"
+
+
 class Fsm:
     # fsm states
     IDLE = 0
@@ -28,16 +50,22 @@ class Fsm:
     true_combi = [] # 1 indexing
     #user_combi = []
 
+    def __init__(self,output):
+        self.output = output
+
     def update(self):
         self.cur_time = datetime.datetime.now()
         if self.state == self.IDLE:
             #do some idling stuff, none locking
-            print "idling"
+            self.output.idling()
             if self.button_press:
                 self.state = self.FLASHING
+
+            #self.ank_combi = 0 # number of button pressed
+            self.rank_stage = 0 # number of stages played
         elif self.state == self.FLASHING:
             #locking, display the lights
-            print "flashing boys!"
+            self.output.flash()
             if self.rank_stage == len(self.MIN_COMBI_L):
                 self.state = self.WIN
             else:
@@ -49,9 +77,9 @@ class Fsm:
             print "new combi boys (stage ", self.rank_stage, ")"
             for x in self.true_combi:
                 # beam from crystal to x
-                print "beam crystal -> ", x
-                print "beam ", x, " -> crystal"
+                self.output.beam(0,x)
                 # beam form x to crystal
+                self.output.beam(x,0)
             self.state = self.USER_COMBI
             self.prev_time = self.cur_time
             self.rank_combi = 0
@@ -63,8 +91,8 @@ class Fsm:
                 self.prev_time = self.cur_time
                 if self.button_press == self.true_combi[self.rank_combi]:
                     self.rank_combi += 1
-                    print "beam ", self.button_press, " -> crystal"
                     # display some cool light flash
+                    self.output.beam(self.button_press,0)
                     if self.rank_combi == len(self.true_combi):
                         print "that was the last of them"
                         self.rank_stage += 1
@@ -78,14 +106,11 @@ class Fsm:
             # else don't do anything and you might just timeout
         elif self.state == self.WIN:
             # do some great stuff
-            print "Champion ..."
-            print "Champion ..."
-            print "Champion at the Puntnam county spelling beeeeeeeeeeee"
+            self.output.win()
             self.state = self.IDLE
         elif self.state == self.GAME_OVER:
-            print "Game over..."
-            print "yeah, game over"
             #do some dank stuff
+            self.output.game_over()
             self.state = self.IDLE
         else:
             print "fsm in impossible states..."
@@ -119,7 +144,8 @@ def main():
     # init buttons
 
     # init fsm
-    fsm = Fsm()
+    light = Output()
+    fsm = Fsm(light)
     
     while True:
         # check buttons
