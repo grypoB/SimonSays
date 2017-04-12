@@ -1,11 +1,12 @@
 #include "control.h"
 
- static RGBConverter conv; 
- static int min_h, max_h; // from 360
- static int min_s, max_s; // from 100
- static int min_v, max_v; // from 100
- static double h,s,v;
- static unsigned char rgb[3];
+static RGBConverter conv; 
+static int min_h, max_h; // from 360
+static int min_s, max_s; // from 100
+static int min_v, max_v; // from 100
+static double h,s,v;
+static unsigned char rgb[3];
+
 
 void Controller::update(uint32_t now) {
     nowTic = now;
@@ -22,6 +23,14 @@ void Controller::update(uint32_t now) {
         break;
         case MODE_MANUAL: //don't do anything :(
         break;
+    }
+
+    if (mode == MODE_AUTO_HSV_SINGLE) {
+      if (effect = EFFECT_BEAM) {
+        updateBeam();
+      }
+      
+      setColorSingle(colort);
     }
 }
 
@@ -69,11 +78,10 @@ void Controller::updateAuto() {
 }
 
 void Controller::updateAutoSingle() {
-    Color color[NUM_PIXEL];
     int i;
 
     for (i=0 ; i<NUM_PIXEL ; i++) {
-      color[i] = color2t[i];
+      colort[i] = color2t[i];
     }
     
     if (nowTic - lastTic > (unsigned long) (stable+transition)) // check if it's time to change color
@@ -87,12 +95,11 @@ void Controller::updateAutoSingle() {
     else if (nowTic - lastTic < (unsigned long) transition)// check if we are still in a transition (change color accordingly)
     {
         for (i=0 ; i<NUM_PIXEL ;i++) {
-          color[i].fade(color1t[i],color2t[i], nowTic, lastTic, lastTic+transition);
+          colort[i].fade(color1t[i],color2t[i], nowTic, lastTic, lastTic+transition);
         }
     }
     
     // apply color to led strip
-    setColorSingle(color);
 }
 
 void Controller::updateBlink() {
@@ -104,6 +111,24 @@ void Controller::updateBlink() {
     } else {
         lastTic = nowTic;
     }
+}
+
+void Controller::updateBeam() {
+    int centerPixel = (effectTic-nowTic)/beamSpeed;
+
+    for (int i=centerPixel-beamRadius ; i<=centerPixel+beamRadius ; i++) {
+        if (i>=0 && i<strip->numPixels()) {
+            colort[i] = beamColor;
+            //colort[i].mix(colort[i], beamColor,
+                          //((double) (beamRadius-abs(i-centerPixel)))/beamRadius);
+        }
+    }
+
+    if (centerPixel-beamRadius >= strip->numPixels()) {
+        effect = EFFECT_NONE;
+    }
+
+
 }
 
 void Color::randHSV() {
@@ -127,3 +152,5 @@ void Color::setHSV(int nMin_h, int nMax_h, int nMin_s, int nMax_s, int nMin_v, i
       min_v = nMin_v;
       max_v = nMax_v;
 }
+
+

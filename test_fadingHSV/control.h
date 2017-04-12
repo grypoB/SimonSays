@@ -8,7 +8,7 @@
 #define NUM_PIXEL 150
 enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
            MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE};
-
+enum Effect {EFFECT_NONE, EFFECT_BEAM};
 
 class Color {
   public :
@@ -54,6 +54,12 @@ class Color {
         blue  = map(at, from, to, color1.blue,  color2.blue);
     }
 
+    void mix(Color color1, Color color2, double opacity) {
+        red   = color1.red  *opacity + color2.red  *(1-opacity); 
+        green = color1.green*opacity + color2.green*(1-opacity); 
+        blue  = color1.blue *opacity + color2.blue *(1-opacity); 
+    }
+
 };
 
 
@@ -65,9 +71,15 @@ class Controller {
 
     Adafruit_NeoPixel* strip;
     enum Mode mode;
+    enum Effect effect = EFFECT_NONE;
 
     uint32_t lastTic = 0;
     uint32_t nowTic = 0;
+    uint32_t effectTic = 0;
+
+    Color beamColor;
+    uint32_t beamRadius; // linearly from 100 to 0 %
+    uint32_t beamSpeed; // ms per LED
     
     uint32_t delay1 = 0;
     uint32_t delay2 = 0;
@@ -77,6 +89,7 @@ class Controller {
 
     Color color1t[NUM_PIXEL];
     Color color2t[NUM_PIXEL];
+    Color colort[NUM_PIXEL];
 
     uint32_t brightness = 255; // brightness of the color (set a top boundary (max 255))
     uint32_t transition = 900; // time to do a transition (in millisecond)
@@ -140,6 +153,14 @@ class Controller {
         setColor(color);
     }
 
+    void setEffectBeam(Color color, uint32_t radius, uint32_t speed) {
+        effect = EFFECT_BEAM;
+        beamColor = color;
+        beamRadius = radius;
+        beamSpeed = speed;
+        effectTic = nowTic;
+    }
+
     /* Blink between color 1 and color 2 in succession
      * (same as breath, but no transition anc actually stays at the color)
      * dealy1: time it stays at color 1
@@ -183,6 +204,7 @@ class Controller {
       void updateAuto();
       void updateBlink();
       void updateAutoSingle();
+      void updateBeam();
 
 };
 

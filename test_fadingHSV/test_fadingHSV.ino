@@ -14,12 +14,15 @@
 #define MIN_S 50
 #define MAX_S 100
 
-#define MIN_V 3
-#define MAX_V 10
+#define MIN_V 10
+#define MAX_V 20
+
+#define TIME 1000
+#define BEAM 1000
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 Controller controller = Controller(&strip);
-Color color;
+Color color(255,0,0);
 
 
 uint32_t now=millis();
@@ -35,4 +38,9 @@ void loop() {
   now = millis();
   controller.update(now);
   delay(10);
+
+  if (now%TIME == 0) {
+      //controller.setEffectBeam(color, 5, BEAM);
+      
+  }
 }
