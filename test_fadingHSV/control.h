@@ -78,8 +78,8 @@ class Controller {
     uint32_t effectTic = 0;
 
     Color beamColor;
-    uint32_t beamRadius; // linearly from 100 to 0 %
-    uint32_t beamSpeed; // ms per LED
+    int32_t beamRadius; // linearly from 100 to 0 %
+    int32_t beamSpeed; // ms per LED
     
     uint32_t delay1 = 0;
     uint32_t delay2 = 0;

@@ -26,7 +26,7 @@ void Controller::update(uint32_t now) {
     }
 
     if (mode == MODE_AUTO_HSV_SINGLE) {
-      if (effect = EFFECT_BEAM) {
+      if (effect == EFFECT_BEAM) {
         updateBeam();
       }
       
@@ -114,8 +114,9 @@ void Controller::updateBlink() {
 }
 
 void Controller::updateBeam() {
-    int centerPixel = (effectTic-nowTic)/beamSpeed;
-
+  
+    int32_t centerPixel = (nowTic-effectTic)/beamSpeed;
+    
     for (int i=centerPixel-beamRadius ; i<=centerPixel+beamRadius ; i++) {
         if (i>=0 && i<strip->numPixels()) {
             colort[i] = beamColor;
@@ -123,10 +124,12 @@ void Controller::updateBeam() {
                           //((double) (beamRadius-abs(i-centerPixel)))/beamRadius);
         }
     }
-
-    if (centerPixel-beamRadius >= strip->numPixels()) {
+    
+    if (centerPixel-beamRadius >= NUM_PIXEL) {
         effect = EFFECT_NONE;
     }
+    
+    
 
 
 }
