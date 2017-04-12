@@ -2,13 +2,21 @@
 #define CONTROL_H
 
 #include "Arduino.h"
+#include "RGBConververter.h"
 #include <Adafruit_NeoPixel.h>
 
-enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL};
+enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL, MODE_AUTO_HSV};
 
 
 class Color {
   public :
+    static RGBConverter conv; 
+    static int min_h=120, max_h=260; // from 100
+    static int min_s=80, max_s=100;
+    static int min_v=3, max_v=10;
+    static double h,s,v;
+    static unsigned char rgb[3];
+
     unsigned char red, green, blue;
     
     // Constructor
@@ -35,6 +43,21 @@ class Color {
         blue  = random(0,max+1);
     }
     
+    // Foncions
+    /* Random color in [0, max] for RGB
+     */
+    void randHSV() {
+        // create a random color (in function of the max)
+        h = random(min_h, max_h+1);  
+        s = random(min_s, max_s+1);  
+        v = random(min_v, max_v+1);  
+
+        conv.hsvToRgb(h/360,s/100,v/100);
+
+        red   = rgb[0];
+        green = rgb[1];
+        blue  = rgb[2];
+    }
 
     /* Fade the color from color1 to color2 from t=from to t=to
      * Caculated at t=at
@@ -98,6 +121,18 @@ class Controller {
         }
 
         brightness = nBrightness;
+        transition = nTransition;
+        stable     = nStable;
+    };
+
+    /* Transition from one random color to the next
+     * transition: time it takes to go from one color to the next
+     * stable: time it stays at one color
+     * brightness: max brightness for the random color
+     */
+    void setAutoHSV(unsigned int nTransition, unsigned int nStable) {
+        mode = MODE_AUTO_HSV;
+
         transition = nTransition;
         stable     = nStable;
     };

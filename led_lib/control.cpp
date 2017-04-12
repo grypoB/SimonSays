@@ -40,7 +40,12 @@ void Controller::updateAuto() {
         color1 = color2;
         lastTic = nowTic;
         
-        color2.rand(brightness); // new color to go to
+        if (mode==MODE_AUTO_HSV) {
+            color2.randHSV();
+        } else {
+            color2.rand(brightness); // new color to go to
+        }
+
     }
     else if (nowTic - lastTic < (unsigned long) transition)// check if we are still in a transition (change color accordingly)
     {
