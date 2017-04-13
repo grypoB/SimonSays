@@ -7,7 +7,7 @@
 
 #define NUM_PIXEL 200
 enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
-           MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE};
+           MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE, MODE_FILL_HSV, MODE_FILL_HSV_REVERSE};
 enum Effect {EFFECT_NONE, EFFECT_BEAM, EFFECT_BEAM_REVERSE};
 
 class Color {
@@ -60,6 +60,11 @@ class Color {
         blue  = color1.blue *opacity + color2.blue *(1-opacity); 
     }
 
+    void set(unsigned char r, unsigned char g, unsigned char b) {
+      red = r;
+      green = g;
+      blue = b;
+    }
 };
 
 
@@ -168,6 +173,21 @@ class Controller {
         effectTic = 0;
     }
 
+    void setFillHSV(uint32_t speed, bool reverse=false) {
+        if (reverse) {
+          mode = MODE_FILL_HSV;
+        } else {
+          mode = MODE_FILL_HSV_REVERSE;
+        }
+        beamSpeed = speed;
+        effectTic = 0;
+
+        for (int i=0 ; i<size ; i++) {
+          color1t[i].randHSV();
+          colort[i].set(0,0,0); // set black background
+        }
+    }
+
     /* Blink between color 1 and color 2 in succession
      * (same as breath, but no transition anc actually stays at the color)
      * dealy1: time it stays at color 1
@@ -203,6 +223,7 @@ class Controller {
       void updateBlink();
       void updateAutoSingle();
       void updateBeam();
+      void updateFillHSV();
 
 };
 

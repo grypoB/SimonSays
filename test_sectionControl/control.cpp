@@ -21,6 +21,9 @@ void Controller::update(uint32_t now) {
         break;
         case MODE_AUTO_HSV_SINGLE: updateAutoSingle();
         break;
+        case MODE_FILL_HSV:
+        case MODE_FILL_HSV_REVERSE: updateFillHSV();
+        break;
         case MODE_MANUAL: //don't do anything :(
         break;
     }
@@ -30,8 +33,7 @@ void Controller::update(uint32_t now) {
       updateBeam();
     }
       
-      //setColorSingle(colort);
-    
+    //setColorSingle(colort);
 }
 
 
@@ -80,21 +82,21 @@ void Controller::updateAuto() {
 void Controller::updateAutoSingle() {
     int i;
 
-    for (i=0 ; i<NUM_PIXEL ; i++) {
+    for (i=0 ; i<size ; i++) {
       colort[i] = color2t[i];
     }
     
     if (nowTic - lastTic > (unsigned long) (stable+transition)) // check if it's time to change color
     {
         lastTic = nowTic;
-        for (i=0 ; i<NUM_PIXEL ; i++) {
+        for (i=0 ; i<size ; i++) {
           color1t[i] = color2t[i];
           color2t[i].randHSV();
         }
     }
     else if (nowTic - lastTic < (unsigned long) transition)// check if we are still in a transition (change color accordingly)
     {
-        for (i=0 ; i<NUM_PIXEL ;i++) {
+        for (i=0 ; i<size ;i++) {
           colort[i].fade(color1t[i],color2t[i], nowTic, lastTic, lastTic+transition);
         }
     }
@@ -141,6 +143,28 @@ void Controller::updateBeam() {
     
 
 
+}
+
+void Controller::updateFillHSV() {
+    if (effectTic==0) {
+      effectTic = nowTic;
+    }
+
+    int32_t centerPixel = (nowTic-effectTic)/beamSpeed;
+    int dir = -1;
+    
+    if (effect == MODE_FILL_HSV_REVERSE) {
+      dir = +1;
+      centerPixel = size - centerPixel - 1;
+    }
+
+    for (int i=centerPixel; i<=0 && i<size; i+= dir) {
+      colort[i] = color1t[i];
+    }
+    
+    if (centerPixel>=size || centerPixel<0) {
+        mode = MODE_AUTO_HSV_SINGLE;
+    }
 }
 
 void Color::randHSV() {
