@@ -25,13 +25,13 @@ void Controller::update(uint32_t now) {
         break;
     }
 
-    if (mode == MODE_AUTO_HSV_SINGLE) {
-      if (effect == EFFECT_BEAM) {
-        updateBeam();
-      }
-      
-      setColorSingle(colort);
+    
+    if (effect == EFFECT_BEAM || effect == EFFECT_BEAM_REVERSE) {
+      updateBeam();
     }
+      
+      //setColorSingle(colort);
+    
 }
 
 
@@ -114,18 +114,27 @@ void Controller::updateBlink() {
 }
 
 void Controller::updateBeam() {
-  
+    if (effectTic==0) {
+      effectTic = nowTic;
+    }
+
     int32_t centerPixel = (nowTic-effectTic)/beamSpeed;
-    
+
+    if (effect == EFFECT_BEAM_REVERSE) {
+      centerPixel = size - centerPixel - 1;
+      //Serial.println("r");
+    }
+    //Serial.println(centerPixel);
+
     for (int i=centerPixel-beamRadius ; i<=centerPixel+beamRadius ; i++) {
-        if (i>=0 && i<strip->numPixels()) {
+        if (i>=0 && i<size) {
             colort[i] = beamColor;
             //colort[i].mix(colort[i], beamColor,
                           //((double) (beamRadius-abs(i-centerPixel)))/beamRadius);
         }
     }
     
-    if (centerPixel-beamRadius >= NUM_PIXEL) {
+    if (centerPixel-beamRadius >= size || centerPixel+beamRadius<0) {
         effect = EFFECT_NONE;
     }
     

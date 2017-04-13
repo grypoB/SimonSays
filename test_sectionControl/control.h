@@ -5,10 +5,10 @@
 #include "RGBConverter.h"
 #include <Adafruit_NeoPixel.h>
 
-#define NUM_PIXEL 150
+#define NUM_PIXEL 200
 enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
            MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE};
-enum Effect {EFFECT_NONE, EFFECT_BEAM};
+enum Effect {EFFECT_NONE, EFFECT_BEAM, EFFECT_BEAM_REVERSE};
 
 class Color {
   public :
@@ -65,13 +65,16 @@ class Color {
 
 class Controller {
   public:
-    Controller(Adafruit_NeoPixel* nStrip) {
-      strip = nStrip;
+    Controller(Color nStrip[], int nSize) {
+      colort = nStrip;
+      size = nSize;
     };
 
-    Adafruit_NeoPixel* strip;
+
     enum Mode mode;
     enum Effect effect = EFFECT_NONE;
+    
+    int size;
 
     uint32_t lastTic = 0;
     uint32_t nowTic = 0;
@@ -89,7 +92,7 @@ class Controller {
 
     Color color1t[NUM_PIXEL];
     Color color2t[NUM_PIXEL];
-    Color colort[NUM_PIXEL];
+    Color *colort;
 
     uint32_t brightness = 255; // brightness of the color (set a top boundary (max 255))
     uint32_t transition = 900; // time to do a transition (in millisecond)
@@ -153,12 +156,16 @@ class Controller {
         setColor(color);
     }
 
-    void setEffectBeam(Color color, uint32_t radius, uint32_t speed) {
-        effect = EFFECT_BEAM;
+    void setEffectBeam(Color color, uint32_t radius, uint32_t speed, bool reverse=false) {
+        if (reverse) {
+          effect = EFFECT_BEAM_REVERSE;
+        } else {
+          effect = EFFECT_BEAM;
+        }
         beamColor = color;
         beamRadius = radius;
         beamSpeed = speed;
-        effectTic = nowTic;
+        effectTic = 0;
     }
 
     /* Blink between color 1 and color 2 in succession
@@ -176,25 +183,16 @@ class Controller {
         delay2 = nDelay2;
     }
 
-    void setColor(uint32_t color) {
-        for (int i=0 ; i<strip->numPixels() ; i++) {
-            strip->setPixelColor(i, color);
-        }
-        strip->show();
-    };
-
     void setColor(Color color) {
-        for (int i=0 ; i<strip->numPixels() ; i++) {
-            strip->setPixelColor(i, strip->Color(color.red,color.green,color.blue));
+        for (int i=0 ; i<size ; i++) {
+            colort[i] = color;
         }
-        strip->show();
     };
 
     void setColorSingle(Color color[]) {
-        for (int i=0 ; i<strip->numPixels() ; i++) {
-            strip->setPixelColor(i, strip->Color(color[i].red,color[i].green,color[i].blue));
+        for (int i=0 ; i<size ; i++) {
+            colort[i] = color[i];
         }
-        strip->show();
     };
 
     void update(uint32_t now);
