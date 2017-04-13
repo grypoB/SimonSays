@@ -6,7 +6,7 @@
 #define CT1            50
 #define PIN            6
 
-#define TRANSITION 500
+#define TRANSITION 300
 #define STABLE     0
 
 #define MIN_H 140
@@ -18,7 +18,7 @@
 #define MIN_V 10
 #define MAX_V 20
 
-#define TIME 2000
+#define TIME 5000
 #define BEAM_SPEED 7
 #define BEAM_SIZE 4
 
@@ -60,7 +60,7 @@ void loop() {
 
   if (now-last > TIME) {
     last = now;
-    controller1.setEffectBeam(color, BEAM_SIZE, BEAM_SPEED, true);
+    controller1.setFillHSV(BEAM_SPEED, true);
     controller2.setEffectBeam(color2, BEAM_SIZE, BEAM_SPEED);
   }
 

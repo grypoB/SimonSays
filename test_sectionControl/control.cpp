@@ -153,17 +153,18 @@ void Controller::updateFillHSV() {
     int32_t centerPixel = (nowTic-effectTic)/beamSpeed;
     int dir = -1;
     
-    if (effect == MODE_FILL_HSV_REVERSE) {
+    if (mode == MODE_FILL_HSV_REVERSE) {
       dir = +1;
       centerPixel = size - centerPixel - 1;
     }
 
-    for (int i=centerPixel; i<=0 && i<size; i+= dir) {
+    for (int i=centerPixel; i>=0 && i<size; i+= dir) {
       colort[i] = color1t[i];
     }
     
     if (centerPixel>=size || centerPixel<0) {
         mode = MODE_AUTO_HSV_SINGLE;
+        lastTic = nowTic;
     }
 }
 

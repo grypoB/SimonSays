@@ -175,10 +175,11 @@ class Controller {
 
     void setFillHSV(uint32_t speed, bool reverse=false) {
         if (reverse) {
-          mode = MODE_FILL_HSV;
-        } else {
           mode = MODE_FILL_HSV_REVERSE;
+        } else {
+          mode = MODE_FILL_HSV;
         }
+        
         beamSpeed = speed;
         effectTic = 0;
 
