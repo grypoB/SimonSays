@@ -1,18 +1,50 @@
 import serial
 import datetime
 import random
+import time
+import sys
+
+# api
+# CMD AREA
+# Blink 
 
 class Output:
     def idling(self):
         print "idling"
 
+        #turn everything off
+        for x in xrange(0,9):
+            cmd(0,x)
+
+        # set blinking button
+        for x in xrange(1,5):
+            cmd(2,x)
+
     def flash(self):
         print "flashing boys!"
+        # set flash button 
+        for x in xrange(1,5):
+            cmd(4,x)
+        # beam everyone white
+        for x in xrange(5,9):
+            cmd(1,x)
 
-    def beam(self, start, end):
-        if start==0:
-            start = "crystal"
-        print "beaming ", start, " -> ", end
+        #turn off buttons
+        for x in xrange(1,5):
+            cmd(0,x)
+
+    def fill(self, button):
+        print "filling button ", button
+        # fill button
+        cmd(3,button+4)
+
+
+    def fake_press(self, button):
+        print "fake pressing ", button
+        # flash button
+        cmd(4, button)
+        # beam from button
+        cmd(1, button+4)
 
     def win(self):
         print "Champion ..."
@@ -20,6 +52,10 @@ class Output:
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"
 
     def game_over(self):
+        # turn off strips and crystal
+        # beam red from crystal
+        # sleep a sec to get timing right
+        # turn buttons red for a sec
         print "Game over..."
         print "yeah, game over"
 
@@ -33,8 +69,9 @@ class Fsm:
     WIN = 4
     GAME_OVER = 5
 
-    MIN_COMBI_L = [3,4,5] # for each stage
-    MAX_COMBI_L = [3,5,7]
+    MIN_COMBI_L = [2,3,5] # for each stage
+    MAX_COMBI_L = [2,4,7]
+    POST_ADD_COMBI = [1,2,3]
     N_BUTTON = 4
 
     MAX_TIMEOUT = 5 # time in s
@@ -46,6 +83,7 @@ class Fsm:
     cur_time = datetime.datetime.now() # current time
 
     state = IDLE # current state
+    was_idle = False
 
     true_combi = [] # 1 indexing
     #user_combi = []
@@ -55,11 +93,16 @@ class Fsm:
 
     def update(self):
         self.cur_time = datetime.datetime.now()
+
         if self.state == self.IDLE:
             #do some idling stuff, none locking
-            self.output.idling()
+            if self.was_idle == False:
+                self.output.idling()
+                self.was_idle = True
+
             if self.button_press:
                 self.state = self.FLASHING
+                self.was_idle = False
 
             #self.ank_combi = 0 # number of button pressed
             self.rank_stage = 0 # number of stages played
@@ -76,10 +119,10 @@ class Fsm:
             self.generate_true_combi()
             print "new combi boys (stage ", self.rank_stage, ")"
             for x in self.true_combi:
-                # beam from crystal to x
-                self.output.beam(0,x)
-                # beam form x to crystal
-                self.output.beam(x,0)
+                time.sleep(1)
+                self.output.fake_press(x)
+                # wait a sec
+
             self.state = self.USER_COMBI
             self.prev_time = self.cur_time
             self.rank_combi = 0
@@ -92,9 +135,10 @@ class Fsm:
                 if self.button_press == self.true_combi[self.rank_combi]:
                     self.rank_combi += 1
                     # display some cool light flash
-                    self.output.beam(self.button_press,0)
+                    self.output.fake_press(self.button_press)
                     if self.rank_combi == len(self.true_combi):
                         print "that was the last of them"
+                        self.output.fill(self.button_press)
                         self.rank_stage += 1
                         self.state = self.FLASHING 
                 else:
@@ -125,22 +169,30 @@ class Fsm:
         
         for i in xrange(0,length):
             self.true_combi.append(random.randint(1,self.N_BUTTON))
+        self.true_combi.append(self.POST_ADD_COMBI[self.rank_stage])
         print "and the combi is ", self.true_combi
         
 
 
 
 
-#uno = serial.Serial('/dev/tty.usbmodem1411',115200)
+uno = serial.Serial('/dev/tty.usbmodem1421',9600)
+
+def cmd(byte1, byte2):
+    send(byte1)
+    send(byte2)
+    print "sent ", byte1, " ", byte2
+    time.sleep(0.005)
 
 def send(byte):
-    uno.write(byte)
+    uno.write(bytearray([byte]))
 
 def read_line():
     while uno.in_waiting:
         sys.stdout.write(uno.readline())
 
 def main():
+    time.sleep(5)
     # init buttons
 
     # init fsm
@@ -152,6 +204,9 @@ def main():
         fsm.button_press = input("?")
         # update
         fsm.update()
+        
+        time.sleep(0.1)
+        read_line()
 
         
 

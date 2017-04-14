@@ -45,10 +45,14 @@ void update_strips() {
 }
 
 void setup() {
+  Color breath1 = Color(0,25,25);
+  Color breath2 = Color(0,0,0);
+  
   Serial.begin(9600);
   strip.begin();
   controller1.setAutoHSV_single(TRANSITION, STABLE);
-  controller2.setAuto(TRANSITION,STABLE,MAX_V);
+  controller2.setBreath(breath1,breath2, 500, 800);
+  //controller2.setBreath(TRANSITION,STABLE,MAX_V);
   color.setHSV(MIN_H, MAX_H, MIN_S, MAX_S, MIN_V, MAX_V);
 }
 
@@ -61,6 +65,7 @@ void loop() {
   if (now-last > TIME) {
     last = now;
     controller1.setFillHSV(BEAM_SPEED, true);
+    controller1.setEffectBeam(color, BEAM_SIZE, BEAM_SPEED, true);
     controller2.setEffectBeam(color2, BEAM_SIZE, BEAM_SPEED);
   }
 
