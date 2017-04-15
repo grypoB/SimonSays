@@ -26,7 +26,7 @@ class Buttons:
             self.cur_state[i] = GPIO.input(self.pin[i])
             if self.cur_state[i]==0 and self.old_state[i]==1:
                 button_pressed = i
-                print i, " on rising edge"
+                print i+1, " on rising edge"
         self.old_state = self.cur_state[:]
 
         return button_pressed+1
@@ -56,10 +56,14 @@ class Output:
         for x in xrange(1,5):
             cmd(0,x)
 
-        cmd(5,0)
-        cmd(up,down)
-        cmd(5,9)
-        cmd(up,down)
+        if up!=0:
+            cmd(5,0)
+            cmd(up,down)
+            cmd(5,9)
+            cmd(up,down)
+        else:
+            cmd(0,0)
+            cmd(9,0)
 
     def fill(self, button):
         print "filling button ", button
@@ -75,16 +79,20 @@ class Output:
         cmd(1, button+4)
 
     def win(self):
+        cmd(6,0)
+        cmd(6,9)
         print "Champion ..."
         print "Champion ..."
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"
 	time.sleep(5)
 
     def game_over(self):
-        # turn off strips and crystal
-        # beam red from crystal
-        # sleep a sec to get timing right
-        # turn buttons red for a sec
+        # turn off crystal
+        cmd(0,0)
+        cmd(0,9)
+        for x in xrange(1,5): #unfill hsv
+            cmd(7,x+4)
+        time.sleep(5)
         print "Game over..."
         print "yeah, game over"
 
@@ -101,8 +109,8 @@ class Fsm:
     MIN_COMBI_L = [1,2,3,4] # for each stage
     MAX_COMBI_L = [1,2,3,4]
     POST_ADD_COMBI = [1,2,3,4]
-    BREATH_UP   = [0,100,50,20,10]
-    BREATH_DOWN = [0,100,50,20,10]
+    BREATH_UP   = [0,15,10,10,10]
+    BREATH_DOWN = [0,70,50,25,25]
     N_BUTTON = 4
 
     MAX_TIMEOUT = 5 # time in s
@@ -208,8 +216,8 @@ class Fsm:
 
 
 
-#uno = serial.Serial('/dev/tty.usbmodem1421',9600)
-uno = serial.Serial('/dev/ttyACM0',9600)
+uno = serial.Serial('/dev/tty.usbmodem1421',9600)
+#uno = serial.Serial('/dev/ttyACM0',9600)
 
 def cmd(byte1, byte2):
     send(byte1)
@@ -227,7 +235,7 @@ def read_line():
 def main():
     time.sleep(3)
     # init buttons
-    butt = Buttons()
+    #butt = Buttons()
 
     # init fsm
     light = Output()
@@ -235,8 +243,8 @@ def main():
     
     while True:
         # check buttons
-        fsm.button_press = butt.update()
-        #fsm.button_press = input("?")
+        #fsm.button_press = butt.update()
+        fsm.button_press = input("?")
 
         # update
         fsm.update()
