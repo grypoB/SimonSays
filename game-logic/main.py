@@ -13,14 +13,14 @@ class Output:
         print "idling"
 
         #turn everything off
-        for x in xrange(0,9):
+        for x in xrange(0,10):
             cmd(0,x)
 
         # set blinking button
         for x in xrange(1,5):
             cmd(2,x)
 
-    def flash(self):
+    def flash(self, up=10, down=50):
         print "flashing boys!"
         # set flash button 
         for x in xrange(1,5):
@@ -32,6 +32,11 @@ class Output:
         #turn off buttons
         for x in xrange(1,5):
             cmd(0,x)
+
+        cmd(5,0)
+        cmd(up,down)
+        cmd(5,9)
+        cmd(up,down)
 
     def fill(self, button):
         print "filling button ", button
@@ -69,9 +74,11 @@ class Fsm:
     WIN = 4
     GAME_OVER = 5
 
-    MIN_COMBI_L = [2,3,5] # for each stage
-    MAX_COMBI_L = [2,4,7]
-    POST_ADD_COMBI = [1,2,3]
+    MIN_COMBI_L = [1,2,3,4] # for each stage
+    MAX_COMBI_L = [1,2,3,4]
+    POST_ADD_COMBI = [1,2,3,4]
+    BREATH_UP   = [0,100,50,20,10]
+    BREATH_DOWN = [0,100,50,20,10]
     N_BUTTON = 4
 
     MAX_TIMEOUT = 5 # time in s
@@ -108,7 +115,7 @@ class Fsm:
             self.rank_stage = 0 # number of stages played
         elif self.state == self.FLASHING:
             #locking, display the lights
-            self.output.flash()
+            self.output.flash(self.BREATH_UP(self.rank_stage),self.BREATH_DOWN(self.rank_stage))
             if self.rank_stage == len(self.MIN_COMBI_L):
                 self.state = self.WIN
             else:
@@ -192,7 +199,7 @@ def read_line():
         sys.stdout.write(uno.readline())
 
 def main():
-    time.sleep(5)
+    time.sleep(3)
     # init buttons
 
     # init fsm
