@@ -7,7 +7,8 @@
 
 #define NUM_PIXEL 60
 enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
-           MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE, MODE_FILL_HSV, MODE_FILL_HSV_REVERSE};
+           MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE, MODE_FILL_HSV, MODE_FILL_HSV_REVERSE,
+           MODE_EMPTY, MODE_EMPTY_REVERSE};
 enum Effect {EFFECT_NONE, EFFECT_BEAM, EFFECT_BEAM_REVERSE, EFFECT_FLASH};
 
 class Color {
@@ -172,7 +173,7 @@ class Controller {
      */
     void setManual(Color color) {
         mode = MODE_MANUAL;
-        color1= color;
+        color1 = color;
     }
 
     void setEffectBeam(Color color, uint32_t radius, uint32_t speed, bool reverse=false) {
@@ -205,6 +206,19 @@ class Controller {
           color1t[i].randHSV();
           colort[i].set(0,0,0); // set black background
         }
+    }
+
+    void setEmpty(Color color, uint32_t speed, bool reverse=false) {
+        if (reverse) {
+          mode = MODE_EMPTY_REVERSE;
+        } else {
+          mode = MODE_EMPTY;
+        }
+        
+        beamSpeed = speed;
+        effectTic = 0;
+
+        color1 = color;
     }
 
     void setEffectFlash(Color color, int32_t duration) {
@@ -253,6 +267,7 @@ class Controller {
       void updateBeam();
       void updateFlash();
       void updateFillHSV();
+      void updateEmpty();
 
 };
 

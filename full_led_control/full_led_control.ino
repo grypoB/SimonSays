@@ -161,13 +161,16 @@ void loop() {
       case 5:
         while(Serial.available()<2); // wait for next bytes
         ctrl->setBreath(ctrl->mainColor, black, Serial.read()*10, Serial.read()*10);
+      break;
+      case 6: ctrl->setAutoHSV_single(TRANSITION, STABLE);                           break;
+      case 7: ctrl->setEmpty(black, BEAM_SPEED2, direction);                         break;
     }
 
     Serial.print(cmd);
     Serial.print(" ");
     Serial.println(area);
   }
-
+  
   update_controllers();
   update_strips();
 
