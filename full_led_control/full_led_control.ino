@@ -24,8 +24,9 @@
 #define MAX_V 20
 
 #define TIME 2000
-#define BEAM_SPEED 7
-#define BEAM_SIZE 4
+#define BEAM_SPEED 10
+#define BEAM_SPEED2 15
+#define BEAM_SIZE 5
 
 #define FLASH 130
 #define BREATH 500
@@ -118,6 +119,7 @@ void setup() {
   crysA.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 
   butt3.setBreath(cb3,black,BREATH,BREATH);
+  //butt3.setAutoHSV_single(TRANSITION,STABLE);
   butt4.setBreath(cb4,black,BREATH,BREATH);
   wall3.setBreath(wa3,black,BREATH,BREATH);
   wall4.setBreath(wa4,black,BREATH,BREATH);
