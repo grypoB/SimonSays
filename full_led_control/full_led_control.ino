@@ -45,7 +45,7 @@ Color wa2 = cb2;
 Color cry = Color(MAX/2,MAX/2,MAX);
 
 Color cb3 = Color(0,0,MAX);
-Color cb4 = Color(MAX,MAX,0);
+Color cb4 = Color(MAX,MAX*0.8,0);
 Color wa3 = cb3;
 Color wa4 = cb4;
 
@@ -117,10 +117,10 @@ void setup() {
   wall2.setBreath(wa2,black,BREATH,BREATH);
   crysA.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 
-  butt3.setBreath(cb1,black,BREATH,BREATH);
-  butt4.setBreath(cb2,black,BREATH,BREATH);
-  wall3.setBreath(wa1,black,BREATH,BREATH);
-  wall4.setBreath(wa2,black,BREATH,BREATH);
+  butt3.setBreath(cb3,black,BREATH,BREATH);
+  butt4.setBreath(cb4,black,BREATH,BREATH);
+  wall3.setBreath(wa3,black,BREATH,BREATH);
+  wall4.setBreath(wa4,black,BREATH,BREATH);
   crysB.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 }
 
