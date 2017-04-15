@@ -3,7 +3,7 @@ import datetime
 import random
 import time
 import sys
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 
 
@@ -20,16 +20,16 @@ class Buttons:
             GPIO.setup(self.pin[i], GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def update(self):
-        button_pressed = 0
+        button_pressed = -1 
 
-        for i in xrange(0,n):
-            cur_state[i] = GPIO.input(pin[i])
-            if cur_state[i]==0 and old_state[i]==1:
+        for i in xrange(0,self.n):
+            self.cur_state[i] = GPIO.input(self.pin[i])
+            if self.cur_state[i]==0 and self.old_state[i]==1:
                 button_pressed = i
                 print i, " on rising edge"
-        old_state = cur_state[:]
+        self.old_state = self.cur_state[:]
 
-        return button_pressed
+        return button_pressed+1
 
 class Output:
     def idling(self):
@@ -78,6 +78,7 @@ class Output:
         print "Champion ..."
         print "Champion ..."
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"
+	time.sleep(5)
 
     def game_over(self):
         # turn off strips and crystal
@@ -154,12 +155,12 @@ class Fsm:
                 # wait a sec
 
             self.state = self.USER_COMBI
-            self.prev_time = self.cur_time
+            self.prev_time = datetime.datetime.now() 
             self.rank_combi = 0
 
 
         elif self.state == self.USER_COMBI:
-            print "button press?"
+            #print "button press?"
             if self.button_press != 0:
                 self.prev_time = self.cur_time
                 if self.button_press == self.true_combi[self.rank_combi]:
@@ -169,6 +170,7 @@ class Fsm:
                     if self.rank_combi == len(self.true_combi):
                         print "that was the last of them"
                         self.output.fill(self.button_press)
+			#time.sleep(1)
                         self.rank_stage += 1
                         self.state = self.FLASHING 
                 else:
@@ -207,6 +209,7 @@ class Fsm:
 
 
 #uno = serial.Serial('/dev/tty.usbmodem1421',9600)
+uno = serial.Serial('/dev/ttyACM0',9600)
 
 def cmd(byte1, byte2):
     send(byte1)
@@ -214,7 +217,7 @@ def cmd(byte1, byte2):
     print "sent ", byte1, " ", byte2
 
 def send(byte):
-    #uno.write(bytearray([byte]))
+    uno.write(bytearray([byte]))
     time.sleep(0.005)
 
 def read_line():
@@ -224,7 +227,7 @@ def read_line():
 def main():
     time.sleep(3)
     # init buttons
-    #butt = Buttons()
+    butt = Buttons()
 
     # init fsm
     light = Output()
@@ -232,8 +235,8 @@ def main():
     
     while True:
         # check buttons
-        #fsm.button_press = butt.update()
-        fsm.button_press = input("?")
+        fsm.button_press = butt.update()
+        #fsm.button_press = input("?")
 
         # update
         fsm.update()
