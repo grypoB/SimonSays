@@ -3,10 +3,33 @@ import datetime
 import random
 import time
 import sys
+#import RPi.GPIO as GPIO
 
-# api
-# CMD AREA
-# Blink 
+
+
+class Buttons:
+    
+    n = 4
+    pin = [17,18,23,24]
+    old_state = [1, 1, 1, 1]
+    cur_state = [1, 1, 1, 1]
+
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
+        for i in xrange(0,self.n):
+            GPIO.setup(self.pin[i], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+    def update(self):
+        button_pressed = 0
+
+        for i in xrange(0,n):
+            cur_state[i] = GPIO.input(pin[i])
+            if cur_state[i]==0 and old_state[i]==1:
+                button_pressed = i
+                print i, " on rising edge"
+        old_state = cur_state[:]
+
+        return button_pressed
 
 class Output:
     def idling(self):
@@ -115,7 +138,7 @@ class Fsm:
             self.rank_stage = 0 # number of stages played
         elif self.state == self.FLASHING:
             #locking, display the lights
-            self.output.flash(self.BREATH_UP(self.rank_stage),self.BREATH_DOWN(self.rank_stage))
+            self.output.flash(self.BREATH_UP[self.rank_stage],self.BREATH_DOWN[self.rank_stage])
             if self.rank_stage == len(self.MIN_COMBI_L):
                 self.state = self.WIN
             else:
@@ -183,16 +206,16 @@ class Fsm:
 
 
 
-uno = serial.Serial('/dev/tty.usbmodem1421',9600)
+#uno = serial.Serial('/dev/tty.usbmodem1421',9600)
 
 def cmd(byte1, byte2):
     send(byte1)
     send(byte2)
     print "sent ", byte1, " ", byte2
-    time.sleep(0.005)
 
 def send(byte):
-    uno.write(bytearray([byte]))
+    #uno.write(bytearray([byte]))
+    time.sleep(0.005)
 
 def read_line():
     while uno.in_waiting:
@@ -201,6 +224,7 @@ def read_line():
 def main():
     time.sleep(3)
     # init buttons
+    #butt = Buttons()
 
     # init fsm
     light = Output()
@@ -208,12 +232,14 @@ def main():
     
     while True:
         # check buttons
+        #fsm.button_press = butt.update()
         fsm.button_press = input("?")
+
         # update
         fsm.update()
         
         time.sleep(0.1)
-        read_line()
+        #read_line()
 
         
 
