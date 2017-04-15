@@ -11,7 +11,7 @@
 #define PIN2          7
 #define MAX           15
 
-#define TRANSITION 300
+#define TRANSITION 250
 #define STABLE     0
 
 #define MIN_H 140
@@ -30,6 +30,9 @@
 #define FLASH 130
 #define BREATH 500
 
+#define BREATH_UP  100
+#define BREATH_DOWN 250
+
 Color color_strip1[TOTAL_LENGTH];
 Color color_strip2[TOTAL_LENGTH];
 
@@ -39,7 +42,7 @@ Color cb1 = Color(MAX,0,0);
 Color cb2 = Color(0,MAX,0);
 Color wa1 = cb1;
 Color wa2 = cb2;
-Color cry = Color(MAX,MAX,MAX);
+Color cry = Color(MAX/2,MAX/2,MAX);
 
 Color cb3 = Color(0,0,MAX);
 Color cb4 = Color(MAX,MAX,0);
@@ -112,13 +115,13 @@ void setup() {
   butt2.setBreath(cb2,black,BREATH,BREATH);
   wall1.setBreath(wa1,black,BREATH,BREATH);
   wall2.setBreath(wa2,black,BREATH,BREATH);
-  crysA.setBreath(cry,black,BREATH,BREATH);
+  crysA.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 
   butt3.setBreath(cb1,black,BREATH,BREATH);
   butt4.setBreath(cb2,black,BREATH,BREATH);
   wall3.setBreath(wa1,black,BREATH,BREATH);
   wall4.setBreath(wa2,black,BREATH,BREATH);
-  crysB.setBreath(cry,black,BREATH,BREATH);
+  crysB.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 }
 
 void loop() {
@@ -139,6 +142,7 @@ void loop() {
       case 6: ctrl= &wall2; break;
       case 7: ctrl= &wall3; break;
       case 8: ctrl= &wall4; break;
+      case 9: ctrl = &crysB; break;
       default: Serial.println("Unknown area"); break;
     }
 
@@ -154,6 +158,9 @@ void loop() {
       case 2: ctrl->setBlink      (ctrl->mainColor, black,BREATH, BREATH);           break;
       case 3: ctrl->setFillHSV    (TRANSITION, STABLE, BEAM_SPEED, direction);       break;
       case 4: ctrl->setEffectFlash(ctrl->mainColor, FLASH);                          break;
+      case 5:
+        while(Serial.available()<2); // wait for next bytes
+        ctrl->setBreath(ctrl->mainColor, black, Serial.read()*10, Serial.read()*10);
     }
 
     Serial.print(cmd);
