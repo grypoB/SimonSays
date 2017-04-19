@@ -95,6 +95,7 @@ class Output:
         cmd(4, button)
         # beam from button
         cmd(1, button+4)
+        time.sleep(0.2)
 
     def win(self):
         pygame.mixer.music.pause()
@@ -240,7 +241,7 @@ class Fsm:
 
 
 #uno = serial.Serial('/dev/tty.usbmodem1421',9600)
-#uno = serial.Serial('/dev/ttyACM0',9600)
+uno = serial.Serial('/dev/ttyACM0',9600)
 
 def cmd(byte1, byte2):
     send(byte1)
@@ -248,7 +249,7 @@ def cmd(byte1, byte2):
     print "sent ", byte1, " ", byte2
 
 def send(byte):
-    #uno.write(bytearray([byte]))
+    uno.write(bytearray([byte]))
     time.sleep(0.005)
 
 def read_line():
@@ -272,7 +273,7 @@ def main():
         # update
         fsm.update()
         
-        time.sleep(0.1)
+        #time.sleep(0.1)
         #read_line()
 
         
