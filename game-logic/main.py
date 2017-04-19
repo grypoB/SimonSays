@@ -3,7 +3,7 @@ import datetime
 import random
 import time
 import sys
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import pygame
 
 pygame.init()
@@ -258,7 +258,7 @@ def read_line():
 def main():
     time.sleep(3)
     # init buttons
-    #butt = Buttons()
+    butt = Buttons()
 
     # init fsm
     light = Output()
@@ -266,8 +266,8 @@ def main():
     
     while True:
         # check buttons
-        #fsm.button_press = butt.update()
-        fsm.button_press = input("?")
+        fsm.button_press = butt.update()
+        #fsm.button_press = input("?")
 
         # update
         fsm.update()
