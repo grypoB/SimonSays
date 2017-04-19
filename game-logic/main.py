@@ -56,6 +56,7 @@ class Output:
 
     def flash(self, up=10, down=50):
         print "flashing boys!"
+        time.sleep(1)
         #pygame.mixer.music.pause()
         #pygame.mixer.Sound.play(sound_next_level)
         sound_next_level.play()
