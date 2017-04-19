@@ -3,9 +3,16 @@ import datetime
 import random
 import time
 import sys
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+import pygame
 
-
+pygame.init()
+sound_bip  = pygame.mixer.Sound("bip.wav")
+sound_lost = pygame.mixer.Sound("losegame.wav")
+sound_win  = pygame.mixer.Sound("win.wav")
+sound_next_level = pygame.mixer.Sound("next_level.wav")
+pygame.mixer.music.load("background.wav")
+pygame.mixer.music.play(-1)
 
 class Buttons:
     
@@ -45,6 +52,8 @@ class Output:
 
     def flash(self, up=10, down=50):
         print "flashing boys!"
+        pygame.mixer.music.pause()
+        pygame.mixer.Sound.play(sound_next_level)
         # set flash button 
         for x in xrange(1,5):
             cmd(4,x)
@@ -64,6 +73,8 @@ class Output:
         else:
             cmd(0,0)
             cmd(9,0)
+        time.sleep(2)
+        pygame.mixer.music.unpause()
 
     def fill(self, button):
         print "filling button ", button
@@ -73,21 +84,26 @@ class Output:
 
     def fake_press(self, button):
         print "fake pressing ", button
+        pygame.mixer.Sound.play(sound_bip)
         # flash button
         cmd(4, button)
         # beam from button
         cmd(1, button+4)
 
     def win(self):
+        pygame.mixer.music.pause()
+        pygame.mixer.Sound.play(sound_win)
         cmd(6,0)
         cmd(6,9)
         print "Champion ..."
         print "Champion ..."
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"
 	time.sleep(5)
+        pygame.mixer.music.unpause()
 
     def game_over(self):
         # turn off crystal
+        pygame.mixer.Sound.play(sound_lost)
         cmd(0,0)
         cmd(0,9)
         for x in xrange(1,5): #unfill hsv
@@ -140,6 +156,7 @@ class Fsm:
                 self.was_idle = True
 
             if self.button_press:
+                self.output.fake_press(self.button_press)
                 self.state = self.FLASHING
                 self.was_idle = False
 
