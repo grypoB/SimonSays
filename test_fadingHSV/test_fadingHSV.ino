@@ -8,8 +8,8 @@
 #define TRANSITION 500
 #define STABLE     0
 
-#define MIN_H 140
-#define MAX_H 280
+#define MIN_H 260
+#define MAX_H 360
 
 #define MIN_S 50
 #define MAX_S 100
@@ -43,7 +43,7 @@ void loop() {
 
   if (now-last > TIME) {
     last = now;
-    controller.setEffectBeam(color, BEAM_SIZE, BEAM_SPEED);
+    //controller.setEffectBeam(color, BEAM_SIZE, BEAM_SPEED);
       
   }
 }
