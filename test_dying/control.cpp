@@ -24,6 +24,9 @@ void Controller::update(uint32_t now) {
         case MODE_FILL_HSV:
         case MODE_FILL_HSV_REVERSE: updateFillHSV();
         break;
+        case MODE_EMPTY:
+        case MODE_EMPTY_REVERSE: updateEmpty();
+        break;
         case MODE_MANUAL: setColor(color1);
         break;
     }
@@ -170,6 +173,30 @@ void Controller::updateFillHSV() {
     
     if (centerPixel>=size || centerPixel<0) {
         mode = MODE_AUTO_HSV_SINGLE;
+        lastTic = nowTic;
+    }
+}
+
+void Controller::updateEmpty() {
+    if (effectTic==0) {
+      effectTic = nowTic;
+    }
+
+    int32_t centerPixel = (nowTic-effectTic)/beamSpeed;
+    int dir = +1;
+    
+    if (mode == MODE_EMPTY_REVERSE) {
+      dir = -1;
+    } else {
+      centerPixel = size - centerPixel - 1;
+    }
+
+    for (int i=centerPixel; i>=0 && i<size ; i+= dir) {
+      colort[i] = color1;
+    }
+    
+    if (centerPixel>=size || centerPixel<0) {
+        mode = MODE_MANUAL;
         lastTic = nowTic;
     }
 }
