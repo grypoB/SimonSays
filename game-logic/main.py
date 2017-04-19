@@ -7,10 +7,14 @@ import sys
 import pygame
 
 pygame.init()
-sound_bip  = pygame.mixer.Sound("bip.wav")
+
+sound_bip = [ pygame.mixer.Sound("A_sharp.ogg") ]
+sound_bip.append(pygame.mixer.Sound("C_sharp.ogg"))
+sound_bip.append(pygame.mixer.Sound("D_sharp.ogg"))
+sound_bip.append(pygame.mixer.Sound("F_sharp.ogg"))
 sound_lost = pygame.mixer.Sound("losegame.wav")
 sound_win  = pygame.mixer.Sound("win.wav")
-sound_next_level = pygame.mixer.Sound("next_level.wav")
+sound_next_level = pygame.mixer.Sound("nextlevel.ogg")
 pygame.mixer.music.load("background.wav")
 pygame.mixer.music.play(-1)
 
@@ -52,8 +56,9 @@ class Output:
 
     def flash(self, up=10, down=50):
         print "flashing boys!"
-        pygame.mixer.music.pause()
-        pygame.mixer.Sound.play(sound_next_level)
+        #pygame.mixer.music.pause()
+        #pygame.mixer.Sound.play(sound_next_level)
+        sound_next_level.play()
         # set flash button 
         for x in xrange(1,5):
             cmd(4,x)
@@ -74,7 +79,7 @@ class Output:
             cmd(0,0)
             cmd(9,0)
         time.sleep(2)
-        pygame.mixer.music.unpause()
+        #pygame.mixer.music.unpause()
 
     def fill(self, button):
         print "filling button ", button
@@ -84,7 +89,7 @@ class Output:
 
     def fake_press(self, button):
         print "fake pressing ", button
-        pygame.mixer.Sound.play(sound_bip)
+        pygame.mixer.Sound.play(sound_bip[button-1])
         # flash button
         cmd(4, button)
         # beam from button
@@ -98,7 +103,7 @@ class Output:
         print "Champion ..."
         print "Champion ..."
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"
-	time.sleep(5)
+	time.sleep(15)
         pygame.mixer.music.unpause()
 
     def game_over(self):
@@ -108,7 +113,7 @@ class Output:
         cmd(0,9)
         for x in xrange(1,5): #unfill hsv
             cmd(7,x+4)
-        time.sleep(5)
+        time.sleep(4)
         print "Game over..."
         print "yeah, game over"
 
@@ -233,7 +238,7 @@ class Fsm:
 
 
 
-uno = serial.Serial('/dev/tty.usbmodem1421',9600)
+#uno = serial.Serial('/dev/tty.usbmodem1421',9600)
 #uno = serial.Serial('/dev/ttyACM0',9600)
 
 def cmd(byte1, byte2):
@@ -242,7 +247,7 @@ def cmd(byte1, byte2):
     print "sent ", byte1, " ", byte2
 
 def send(byte):
-    uno.write(bytearray([byte]))
+    #uno.write(bytearray([byte]))
     time.sleep(0.005)
 
 def read_line():
