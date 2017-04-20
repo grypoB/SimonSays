@@ -5,8 +5,8 @@
 #define L1 40
 #define L2 52
 #define L3 8
-#define L4 48
-#define L5 20
+#define L4 50
+#define L5 18
 
 #define D1 28
 #define D2 50
