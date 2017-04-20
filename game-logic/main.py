@@ -118,6 +118,15 @@ class Output:
         print "yeah, game over"
 
 
+def flatten(l):
+    if l==[]:
+        return []
+    elif type(l[0]) != list:
+        return [l[0]] + flatten(l[1:])
+    else:
+        return flatten(l[0]) + flatten(l[1:])
+
+
 class Fsm:
     # fsm states
     IDLE = 0
@@ -127,11 +136,11 @@ class Fsm:
     WIN = 4
     GAME_OVER = 5
 
-    MIN_COMBI_L = [1,2,3,4] # for each stage
-    MAX_COMBI_L = [1,2,3,4]
+    MIN_COMBI_L = [2,3,4] # for each stage
+    MAX_COMBI_L = [2,3,4]
     POST_ADD_COMBI = [1,2,3,4]
-    BREATH_UP   = [0,15,10,10,10]
-    BREATH_DOWN = [0,70,50,25,25]
+    #BREATH_UP   = [0,15,10,10,10]
+    #BREATH_DOWN = [0,70,50,25,25]
     N_BUTTON = 4
 
     MAX_TIMEOUT = 5 # time in s
@@ -156,12 +165,16 @@ class Fsm:
 
         if self.state == self.IDLE:
             #do some idling stuff, none locking
+            self.POST_ADD_COMBI = [1,2,3,4]
             if self.was_idle == False:
                 self.output.idling()
                 self.was_idle = True
 
             if self.button_press:
                 self.output.fake_press(self.button_press)
+                self.output.fill(self.button_press)
+                del self.POST_ADD_COMBI[self.button_press-1]
+                random.shuffle(self.POST_ADD_COMBI)
                 self.state = self.FLASHING
                 self.was_idle = False
 
@@ -232,6 +245,7 @@ class Fsm:
         for i in xrange(0,length):
             self.true_combi.append(random.randint(1,self.N_BUTTON))
         self.true_combi.append(self.POST_ADD_COMBI[self.rank_stage])
+        self.true_combi = flatten(self.true_combi)
         print "and the combi is ", self.true_combi
         
 
