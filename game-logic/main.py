@@ -18,6 +18,8 @@ sound_next_level = pygame.mixer.Sound("nextlevel.ogg")
 pygame.mixer.music.load("background.wav")
 pygame.mixer.music.play(-1)
 
+#fake modif
+
 class Buttons:
     
     n = 4
