@@ -9,7 +9,7 @@
 #define LENGTH_W      (TOTAL_LENGTH/2-LENGTH_C/2-LENGTH_B)
 #define PIN1          6
 #define PIN2          7
-#define MAX           15
+#define MAX           255
 
 #define TRANSITION 250
 #define STABLE     0
@@ -20,8 +20,8 @@
 #define MIN_S 50
 #define MAX_S 100
 
-#define MIN_V 10
-#define MAX_V 20
+#define MIN_V 80
+#define MAX_V 100
 
 #define TIME 2000
 #define BEAM_SPEED 10
@@ -127,8 +127,8 @@ void setup() {
   wall2.setBreath(wa2,black,BREATH,BREATH);
   crysA.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 
-  butt3.setBreath(cb3,black,BREATH,BREATH);
-  //butt3.setAutoHSV_single(TRANSITION,STABLE);
+  //butt3.setBreath(cb3,black,BREATH,BREATH);
+  butt3.setAutoHSV_single(TRANSITION,STABLE);
   butt4.setBreath(cb4,black,BREATH,BREATH);
   wall3.setBreath(wa3,black,BREATH,BREATH);
   wall4.setBreath(wa4,black,BREATH,BREATH);
@@ -141,7 +141,7 @@ void loop() {
   while (Serial.available()) {
     cmd  = Serial.read();
     area = (cmd & 0xF);
-    cmd = ((cmd & 0xF0) >> 4) & 0xF
+    cmd = ((cmd & 0xF0) >> 4) & 0xF;
     
     switch(area) {
       case 0: ctrl = &crysA; break; // actually need crysB also
@@ -171,10 +171,10 @@ void loop() {
       case 4: ctrl->setEffectFlash(ctrl->mainColor, FLASH);                          break;
       case 6: ctrl->setAutoHSV_single(TRANSITION, STABLE);                           break;
       case 7: ctrl->setEmpty(black, BEAM_SPEED2, direction);                         break;
-      case 8: ctrl->setBreath(ctrl->mainColor, black, BREATH1_UP, BREATH1_DOWN);     break;
-      case 9: ctrl->setBreath(ctrl->mainColor, black, BREATH2_UP, BREATH2_DOWN);     break;
-      case 10: ctrl->setBreath(ctrl->mainColor, black, BREATH3_UP, BREATH3_DOWN);     break;
-      case 11: ctrl->setBreath(ctrl->mainColor, black, BREATH4_UP, BREATH4_DOWN);     break;
+      case 8: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP1, BREATH_DOWN1);     break;
+      case 9: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP2, BREATH_DOWN2);     break;
+      case 10: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP3, BREATH_DOWN3);     break;
+      case 11: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP4, BREATH_DOWN4);     break;
 
     }
 
