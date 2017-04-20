@@ -54,7 +54,7 @@ class Output:
         for x in xrange(1,5):
             cmd(2,x)
 
-    def flash(self, up=10, down=50):
+    def flash(self, stage):
         print "flashing boys!"
         time.sleep(1)
         #pygame.mixer.music.pause()
@@ -71,11 +71,9 @@ class Output:
         for x in xrange(1,5):
             cmd(0,x)
 
-        if up!=0:
-            cmd(5,0)
-            cmd(up,down)
-            cmd(5,9)
-            cmd(up,down)
+        if stage!=0:
+            cmd(7+stage,0)
+            cmd(7+stage,9)
         else:
             cmd(0,0)
             cmd(9,0)
@@ -171,7 +169,7 @@ class Fsm:
             self.rank_stage = 0 # number of stages played
         elif self.state == self.FLASHING:
             #locking, display the lights
-            self.output.flash(self.BREATH_UP[self.rank_stage],self.BREATH_DOWN[self.rank_stage])
+            self.output.flash(self.rank_stage)
             if self.rank_stage == len(self.MIN_COMBI_L):
                 self.state = self.WIN
             else:
@@ -244,8 +242,7 @@ class Fsm:
 uno = serial.Serial('/dev/ttyACM0',9600)
 
 def cmd(byte1, byte2):
-    send(byte1)
-    send(byte2)
+    send((byte1<<4) | byte2)
     print "sent ", byte1, " ", byte2
 
 def send(byte):

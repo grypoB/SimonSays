@@ -31,8 +31,17 @@
 #define FLASH 130
 #define BREATH 500
 
-#define BREATH_UP  100
+#define BREATH_UP   100
 #define BREATH_DOWN 250
+#define BREATH_UP1   150
+#define BREATH_DOWN1 700
+#define BREATH_UP2   100
+#define BREATH_DOWN2 500
+#define BREATH_UP3   100
+#define BREATH_DOWN3 250
+#define BREATH_UP4   100
+#define BREATH_DOWN4 250
+
 
 Color color_strip1[TOTAL_LENGTH];
 Color color_strip2[TOTAL_LENGTH];
@@ -129,11 +138,11 @@ void setup() {
 void loop() {
   now = millis();
 
-  while (Serial.available()>=2) {
-    //Serial.println("copy");
+  while (Serial.available()) {
     cmd  = Serial.read();
-    area = Serial.read();
-
+    area = (cmd & 0xF);
+    cmd = ((cmd & 0xF0) >> 4) & 0xF
+    
     switch(area) {
       case 0: ctrl = &crysA; break; // actually need crysB also
       case 1: ctrl = &butt1; break;
@@ -160,12 +169,13 @@ void loop() {
       case 2: ctrl->setBlink      (ctrl->mainColor, black,BREATH, BREATH);           break;
       case 3: ctrl->setFillHSV    (TRANSITION, STABLE, BEAM_SPEED, direction);       break;
       case 4: ctrl->setEffectFlash(ctrl->mainColor, FLASH);                          break;
-      case 5:
-        while(Serial.available()<2); // wait for next bytes
-        ctrl->setBreath(ctrl->mainColor, black, Serial.read()*10, Serial.read()*10);
-      break;
       case 6: ctrl->setAutoHSV_single(TRANSITION, STABLE);                           break;
       case 7: ctrl->setEmpty(black, BEAM_SPEED2, direction);                         break;
+      case 8: ctrl->setBreath(ctrl->mainColor, black, BREATH1_UP, BREATH1_DOWN);     break;
+      case 9: ctrl->setBreath(ctrl->mainColor, black, BREATH2_UP, BREATH2_DOWN);     break;
+      case 10: ctrl->setBreath(ctrl->mainColor, black, BREATH3_UP, BREATH3_DOWN);     break;
+      case 11: ctrl->setBreath(ctrl->mainColor, black, BREATH4_UP, BREATH4_DOWN);     break;
+
     }
 
     Serial.print(cmd);
