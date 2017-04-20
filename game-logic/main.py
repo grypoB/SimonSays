@@ -15,7 +15,7 @@ sound_bip.append(pygame.mixer.Sound("F_sharp.ogg"))
 sound_lost = pygame.mixer.Sound("losegame.wav")
 sound_win  = pygame.mixer.Sound("win.wav")
 sound_next_level = pygame.mixer.Sound("nextlevel.ogg")
-pygame.mixer.music.load("background.wav")
+pygame.mixer.music.load("background.ogg")
 pygame.mixer.music.play(-1)
 
 class Buttons:
