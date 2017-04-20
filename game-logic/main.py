@@ -21,7 +21,8 @@ pygame.mixer.music.play(-1)
 class Buttons:
     
     n = 4
-    pin = [17,18,23,24]
+    #pin = [17,18,23,24]
+    pin = [23,17,24,18]
     old_state = [1, 1, 1, 1]
     cur_state = [1, 1, 1, 1]
 

@@ -2,11 +2,20 @@
 #include "RGBConverter.h"
 #include <Adafruit_NeoPixel.h>
 
-#define LENGTH_B      20
-#define LENGTH_C      20
-#define TOTAL_LENGTH  150
+#define L1 40
+#define L2 52
+#define L3 8
+#define L4 48
+#define L5 20
 
-#define LENGTH_W      (TOTAL_LENGTH/2-LENGTH_C/2-LENGTH_B)
+#define D1 28
+#define D2 50
+#define D3 15
+#define D4 53
+#define D5 4
+
+#define TOTAL_LENGTH 200
+
 #define PIN1          6
 #define PIN2          7
 #define MAX           255
@@ -62,17 +71,17 @@ Color wa4 = cb4;
 Adafruit_NeoPixel strip1 = Adafruit_NeoPixel(TOTAL_LENGTH, PIN1, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(TOTAL_LENGTH, PIN2, NEO_GRB + NEO_KHZ800);
 
-Controller butt1 = Controller(color_strip1                             , LENGTH_B, cb1);
-Controller wall1 = Controller(color_strip1+LENGTH_B                    , LENGTH_W, wa1);
-Controller crysA = Controller(color_strip1+LENGTH_B+LENGTH_W           , LENGTH_C, cry);
-Controller wall2 = Controller(color_strip1+LENGTH_B+LENGTH_W+LENGTH_C  , LENGTH_W, wa2);
-Controller butt2 = Controller(color_strip1+LENGTH_B+2*LENGTH_W+LENGTH_C, LENGTH_B, cb2);
+Controller butt1 = Controller(color_strip1            , L1, cb1);
+Controller wall1 = Controller(color_strip1+L1         , L2, wa1);
+Controller crysA = Controller(color_strip1+L1+L2      , L3, cry);
+Controller wall2 = Controller(color_strip1+L1+L2+L3   , L4, wa2);
+Controller butt2 = Controller(color_strip1+L1+L2+L3+L4, L5, cb2);
 
-Controller butt3 = Controller(color_strip2                             , LENGTH_B, cb3);
-Controller wall3 = Controller(color_strip2+LENGTH_B                    , LENGTH_W, wa3);
-Controller crysB = Controller(color_strip2+LENGTH_B+LENGTH_W           , LENGTH_C, cry);
-Controller wall4 = Controller(color_strip2+LENGTH_B+LENGTH_W+LENGTH_C  , LENGTH_W, wa4);
-Controller butt4 = Controller(color_strip2+LENGTH_B+2*LENGTH_W+LENGTH_C, LENGTH_B, cb4);
+Controller butt3 = Controller(color_strip2            , D1, cb3);
+Controller wall3 = Controller(color_strip2+D1         , D2, wa3);
+Controller crysB = Controller(color_strip2+D1+D2      , D3, cry);
+Controller wall4 = Controller(color_strip2+D1+D2+D3   , D4, wa4);
+Controller butt4 = Controller(color_strip2+D1+D2+D3+D4, D5, cb4);
 
 Controller *ctrl = NULL;
 
@@ -123,15 +132,15 @@ void setup() {
 
   butt1.setBreath(cb1,black,BREATH,BREATH);
   butt2.setBreath(cb2,black,BREATH,BREATH);
-  wall1.setBreath(wa1,black,BREATH,BREATH);
-  wall2.setBreath(wa2,black,BREATH,BREATH);
+  wall1.setBreath(wa2,black,BREATH,BREATH);
+  wall2.setBreath(wa1,black,BREATH,BREATH);
   crysA.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 
-  //butt3.setBreath(cb3,black,BREATH,BREATH);
-  butt3.setAutoHSV_single(TRANSITION,STABLE);
+  butt3.setBreath(cb3,black,BREATH,BREATH);
+  //butt3.setAutoHSV_single(TRANSITION,STABLE);
   butt4.setBreath(cb4,black,BREATH,BREATH);
-  wall3.setBreath(wa3,black,BREATH,BREATH);
-  wall4.setBreath(wa4,black,BREATH,BREATH);
+  wall3.setBreath(wa4,black,BREATH,BREATH);
+  wall4.setBreath(wa3,black,BREATH,BREATH);
   crysB.setBreath(black,cry,BREATH_UP,BREATH_DOWN);
 }
 
