@@ -100,6 +100,10 @@ class Output:
         pygame.mixer.Sound.play(sound_win)
         cmd(6,0)
         cmd(6,9)
+        cmd(6,1)
+        cmd(6,2)
+        cmd(6,3)
+        cmd(6,4)
         print "Champion ..."
         print "Champion ..."
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"

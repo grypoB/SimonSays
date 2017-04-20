@@ -52,7 +52,7 @@ Color cb1 = Color(MAX,0,0);
 Color cb2 = Color(0,MAX,0);
 Color wa1 = cb1;
 Color wa2 = cb2;
-Color cry = Color(MAX/2,MAX/2,MAX);
+Color cry = Color(0,MAX/2,MAX);
 
 Color cb3 = Color(0,0,MAX);
 Color cb4 = Color(MAX,MAX*0.8,0);
@@ -63,7 +63,7 @@ Adafruit_NeoPixel strip1 = Adafruit_NeoPixel(TOTAL_LENGTH, PIN1, NEO_GRB + NEO_K
 Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(TOTAL_LENGTH, PIN2, NEO_GRB + NEO_KHZ800);
 
 Controller butt1 = Controller(color_strip1                             , LENGTH_B, cb1);
-Controller wall1 = Controller(color_strip1+LENGTH_B                    , LENGTH_W, wa2);
+Controller wall1 = Controller(color_strip1+LENGTH_B                    , LENGTH_W, wa1);
 Controller crysA = Controller(color_strip1+LENGTH_B+LENGTH_W           , LENGTH_C, cry);
 Controller wall2 = Controller(color_strip1+LENGTH_B+LENGTH_W+LENGTH_C  , LENGTH_W, wa2);
 Controller butt2 = Controller(color_strip1+LENGTH_B+2*LENGTH_W+LENGTH_C, LENGTH_B, cb2);
