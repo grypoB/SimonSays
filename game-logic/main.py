@@ -24,9 +24,12 @@ class Buttons:
     
     n = 4
     #pin = [17,18,23,24]
-    pin = [22,17,24,18]
+    pin = [22,17,24,25]
     old_state = [1, 1, 1, 1]
     cur_state = [1, 1, 1, 1]
+    startTime = [0, 0, 0, 0]
+    trig =      [False, False, False, False]
+    DELAY = 0.04
 
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
@@ -35,12 +38,22 @@ class Buttons:
 
     def update(self):
         button_pressed = -1 
+	now = datetime.datetime.now()
 
         for i in xrange(0,self.n):
             self.cur_state[i] = GPIO.input(self.pin[i])
             if self.cur_state[i]==0 and self.old_state[i]==1:
-                button_pressed = i
-                print i+1, " on rising edge"
+                self.trig[i] = True
+                self.startTime[i] = now
+                print i+1, " triged"
+	    elif self.cur_state[i]==0 and self.trig[i] :
+		if (now-self.startTime[i]).total_seconds()>self.DELAY:
+		   button_pressed = i
+	           self.trig[i] = False
+                else:
+	           print (now-self.startTime[i]).total_seconds()
+            elif self.cur_state[i]==1:
+                self.trig[i] = False
         self.old_state = self.cur_state[:]
 
         return button_pressed+1
@@ -55,7 +68,7 @@ class Output:
 
         # set blinking button
         for x in xrange(1,5):
-            cmd(2,x)
+            cmd(12,x)
 
     def flash(self, stage):
         print "flashing boys!"
@@ -96,7 +109,7 @@ class Output:
         cmd(4, button)
         # beam from button
         cmd(1, button+4)
-        time.sleep(0.2)
+        time.sleep(0.3)
 
     def win(self):
         pygame.mixer.music.pause()
@@ -110,7 +123,7 @@ class Output:
         print "Champion ..."
         print "Champion ..."
         print "Champion at the Puntnam county spelling beeeeeeeeeeee"
-	time.sleep(15)
+	time.sleep(10)
         pygame.mixer.music.unpause()
 
     def game_over(self):
