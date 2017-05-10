@@ -2,7 +2,7 @@
 #include "RGBConverter.h"
 #include <Adafruit_NeoPixel.h>
 
-#define TOTAL_LENGTH  60
+#define TOTAL_LENGTH  200
 
 #define PIN1          6
 #define PIN2          7
@@ -10,11 +10,11 @@
 
 #define MAX           15
 
-#define TRANSITION 3000
-#define STABLE     500
+#define TRANSITION 500
+#define STABLE     0
 
-#define MIN_H 160
-#define MAX_H 280
+#define MIN_H 150
+#define MAX_H 290
 
 #define MIN_S 70
 #define MAX_S 100
@@ -23,9 +23,9 @@
 #define MAX_V 100
 
 #define BREATH 100
-#define SPEED 7
+#define SPEED 14
 
-#define TIME 5000
+#define TIME 8000
 #define BEAM 5
 
 Color color_strip1[TOTAL_LENGTH];
@@ -79,7 +79,7 @@ void setup() {
 
   //ct1.setBlink(color_ct1,black,BREATH,BREATH);
   
-  ct1.setAutoHSV(TRANSITION,STABLE);
+  ct1.setAutoHSV_single(TRANSITION,STABLE);
   //ct2.setFillHSV(TRANSITION,STABLE,SPEED);
   //ct3.setFillHSV(TRANSITION,STABLE,SPEED);
 
@@ -93,6 +93,6 @@ void loop() {
 
   if (now-last>TIME) {
     last = now;
-    //ct1.setEffectBeam(white, BEAM, SPEED);
+    ct1.setEffectBeam(white, BEAM, SPEED);
   }
 }

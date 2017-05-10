@@ -5,7 +5,7 @@
 #include "RGBConverter.h"
 #include <Adafruit_NeoPixel.h>
 
-#define NUM_PIXEL 60
+#define NUM_PIXEL 65
 enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
            MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE, MODE_FILL_HSV, MODE_FILL_HSV_REVERSE,
            MODE_EMPTY, MODE_EMPTY_REVERSE};

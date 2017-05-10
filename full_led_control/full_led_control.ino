@@ -9,10 +9,10 @@
 #define L5 18
 
 #define D1 28
-#define D2 50
-#define D3 15
-#define D4 53
-#define D5 4
+#define D2 60
+#define D3 13
+#define D4 49
+#define D5 15
 
 #define TOTAL_LENGTH 200
 
@@ -37,7 +37,7 @@
 #define BEAM_SPEED2 15
 #define BEAM_SIZE 5
 
-#define FLASH 130
+#define FLASH 300
 #define BREATH 500
 
 #define BREATH_UP   100
@@ -184,6 +184,7 @@ void loop() {
       case 9: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP2, BREATH_DOWN2);     break;
       case 10: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP3, BREATH_DOWN3);     break;
       case 11: ctrl->setBreath(ctrl->mainColor, black, BREATH_UP4, BREATH_DOWN4);     break;
+      case 12: ctrl->setBreath(ctrl->mainColor, black, BREATH, BREATH);     break;
 
     }
 
