@@ -2,21 +2,17 @@
 #define CONTROL_H
 
 #include "Arduino.h"
-#include "RGBConververter.h"
+#include "RGBConverter.h"
 #include <Adafruit_NeoPixel.h>
 
-enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL, MODE_AUTO_HSV};
-
+#define NUM_PIXEL 65
+enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
+           MODE_AUTO_HSV, MODE_AUTO_HSV_SINGLE, MODE_FILL_HSV, MODE_FILL_HSV_REVERSE,
+           MODE_EMPTY, MODE_EMPTY_REVERSE};
+enum Effect {EFFECT_NONE, EFFECT_BEAM, EFFECT_BEAM_REVERSE, EFFECT_FLASH};
 
 class Color {
   public :
-    static RGBConverter conv; 
-    static int min_h=120, max_h=260; // from 100
-    static int min_s=80, max_s=100;
-    static int min_v=3, max_v=10;
-    static double h,s,v;
-    static unsigned char rgb[3];
-
     unsigned char red, green, blue;
     
     // Constructor
@@ -46,19 +42,10 @@ class Color {
     // Foncions
     /* Random color in [0, max] for RGB
      */
-    void randHSV() {
-        // create a random color (in function of the max)
-        h = random(min_h, max_h+1);  
-        s = random(min_s, max_s+1);  
-        v = random(min_v, max_v+1);  
-
-        conv.hsvToRgb(h/360,s/100,v/100);
-
-        red   = rgb[0];
-        green = rgb[1];
-        blue  = rgb[2];
-    }
-
+    void randHSV();
+    void setHSV(int nMin_h, int nMax_h,
+                int nMin_s, int nMax_s,
+                int nMin_v, int nMax_v);
     /* Fade the color from color1 to color2 from t=from to t=to
      * Caculated at t=at
      */
@@ -68,26 +55,64 @@ class Color {
         blue  = map(at, from, to, color1.blue,  color2.blue);
     }
 
+    void mix(Color color1, Color color2, double opacity) {
+        red   = color1.red  *opacity + color2.red  *(1-opacity); 
+        green = color1.green*opacity + color2.green*(1-opacity); 
+        blue  = color1.blue *opacity + color2.blue *(1-opacity); 
+    }
+
+    void set(unsigned char r, unsigned char g, unsigned char b) {
+      red = r;
+      green = g;
+      blue = b;
+    }
 };
 
 
 class Controller {
   public:
-    Controller(Adafruit_NeoPixel* nStrip) {
-      strip = nStrip;
+    Controller(Color nStrip[], int nSize, Color nMainColor = Color()) {
+      //Serial.begin(9600);
+      colort = nStrip;
+      size = nSize;
+      mainColor = nMainColor;
+      /*
+      if (nSize>NUM_PIXEL) {
+        Serial.print("strip too long ");
+        Serial.println(nSize);
+      } else {
+        Serial.print("initialized at ");
+        Serial.println(nSize);
+      }
+      */
     };
 
-    Adafruit_NeoPixel* strip;
+
     enum Mode mode;
+    enum Effect effect = EFFECT_NONE;
+    
+    int size;
 
     uint32_t lastTic = 0;
     uint32_t nowTic = 0;
+    uint32_t effectTic = 0;
+
+    Color effectColor;
+    int32_t beamRadius; // linearly from 100 to 0 %
+    int32_t beamSpeed; // ms per LED
+    int32_t effectDuration;
     
     uint32_t delay1 = 0;
     uint32_t delay2 = 0;
 
+    Color mainColor;
+
     Color color1;
     Color color2;
+
+    Color color1t[NUM_PIXEL];
+    Color color2t[NUM_PIXEL];
+    Color *colort;
 
     uint32_t brightness = 255; // brightness of the color (set a top boundary (max 255))
     uint32_t transition = 900; // time to do a transition (in millisecond)
@@ -137,13 +162,74 @@ class Controller {
         stable     = nStable;
     };
 
+    void setAutoHSV_single(unsigned int nTransition, unsigned int nStable) {
+        mode = MODE_AUTO_HSV_SINGLE;
+
+        transition = nTransition;
+        stable     = nStable;
+    };
+
     /* Set the strip to a constant manual color
      */
     void setManual(Color color) {
         mode = MODE_MANUAL;
-        setColor(color);
+        color1 = color;
     }
 
+    void setEffectBeam(Color color, uint32_t radius, uint32_t speed, bool reverse=false) {
+        if (reverse) {
+          effect = EFFECT_BEAM_REVERSE;
+        } else {
+          effect = EFFECT_BEAM;
+        }
+        effectColor = color;
+        beamRadius = radius;
+        beamSpeed = speed;
+        effectTic = 0;
+    }
+
+    void setFillHSV(unsigned int nTransition, unsigned int nStable,
+                    uint32_t speed, bool reverse=false) {
+        transition = nTransition;
+        stable     = nStable;
+        
+        if (reverse) {
+          mode = MODE_FILL_HSV_REVERSE;
+        } else {
+          mode = MODE_FILL_HSV;
+        }
+        
+        beamSpeed = speed;
+        effectTic = 0;
+
+        for (int i=0 ; i<size ; i++) {
+          color1t[i].randHSV();
+          colort[i].set(0,0,0); // set black background
+        }
+    }
+
+    void setEmpty(Color color, uint32_t speed, bool reverse=false) {
+        if (reverse) {
+          mode = MODE_EMPTY_REVERSE;
+        } else {
+          mode = MODE_EMPTY;
+        }
+        
+        beamSpeed = speed;
+        effectTic = 0;
+
+        color1 = color;
+    }
+
+    void setEffectFlash(Color color, int32_t duration) {
+        effect = EFFECT_FLASH;
+        
+        effectColor = color;
+        effectDuration = duration;
+        
+        effectTic = nowTic;
+    }
+    
     /* Blink between color 1 and color 2 in succession
      * (same as breath, but no transition anc actually stays at the color)
      * dealy1: time it stays at color 1
@@ -159,18 +245,16 @@ class Controller {
         delay2 = nDelay2;
     }
 
-    void setColor(uint32_t color) {
-        for (int i=0 ; i<strip->numPixels() ; i++) {
-            strip->setPixelColor(i, color);
+    void setColor(Color color) {
+        for (int i=0 ; i<size ; i++) {
+            colort[i] = color;
         }
-        strip->show();
     };
 
-    void setColor(Color color) {
-        for (int i=0 ; i<strip->numPixels() ; i++) {
-            strip->setPixelColor(i, strip->Color(color.red,color.green,color.blue));
+    void setColorSingle(Color color[]) {
+        for (int i=0 ; i<size ; i++) {
+            colort[i] = color[i];
         }
-        strip->show();
     };
 
     void update(uint32_t now);
@@ -179,6 +263,12 @@ class Controller {
       void updateBreath();
       void updateAuto();
       void updateBlink();
+      void updateAutoSingle();
+      void updateBeam();
+      void updateFlash();
+      void updateFillHSV();
+      void updateEmpty();
+
 };
 
 
