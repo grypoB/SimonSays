@@ -1,9 +1,9 @@
-#ifndef CONTROL_H
-#define CONTROL_H
+#ifndef __CONTROLLER_H__
+#define __CONTROLLER_H__
 
 #include "Arduino.h"
 #include "RGBConverter.h"
-#include <Adafruit_NeoPixel.h>
+#include "Color.h"
 
 #define NUM_PIXEL 65
 enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
@@ -11,80 +11,12 @@ enum Mode {MODE_AUTO, MODE_BLINK, MODE_BREATH, MODE_MANUAL,
            MODE_EMPTY, MODE_EMPTY_REVERSE};
 enum Effect {EFFECT_NONE, EFFECT_BEAM, EFFECT_BEAM_REVERSE, EFFECT_FLASH};
 
-class Color {
-  public :
-    unsigned char red, green, blue;
-    
-    // Constructor
-    Color() {
-        red = 0;
-        green = 0;
-        blue = 0;
-    }
-
-    Color(unsigned char r, unsigned char g, unsigned char b) {
-        red = r;
-        green = g;
-        blue = b;
-    }
-    
-
-    // Foncions
-    /* Random color in [0, max] for RGB
-     */
-    void rand(unsigned int max) {
-        // create a random color (in function of the max)
-        red   = random(0,max+1);
-        green = random(0,max+1);
-        blue  = random(0,max+1);
-    }
-    
-    // Foncions
-    /* Random color in [0, max] for RGB
-     */
-    void randHSV();
-    void setHSV(int nMin_h, int nMax_h,
-                int nMin_s, int nMax_s,
-                int nMin_v, int nMax_v);
-    /* Fade the color from color1 to color2 from t=from to t=to
-     * Caculated at t=at
-     */
-    void fade(Color color1, Color color2, unsigned long at, unsigned long from, unsigned long to) {
-        red   = map(at, from, to, color1.red,   color2.red);
-        green = map(at, from, to, color1.green, color2.green);
-        blue  = map(at, from, to, color1.blue,  color2.blue);
-    }
-
-    void mix(Color color1, Color color2, double opacity) {
-        red   = color1.red  *opacity + color2.red  *(1-opacity); 
-        green = color1.green*opacity + color2.green*(1-opacity); 
-        blue  = color1.blue *opacity + color2.blue *(1-opacity); 
-    }
-
-    void set(unsigned char r, unsigned char g, unsigned char b) {
-      red = r;
-      green = g;
-      blue = b;
-    }
-};
-
-
 class Controller {
   public:
     Controller(Color nStrip[], int nSize, Color nMainColor = Color()) {
-      //Serial.begin(9600);
       colort = nStrip;
       size = nSize;
       mainColor = nMainColor;
-      /*
-      if (nSize>NUM_PIXEL) {
-        Serial.print("strip too long ");
-        Serial.println(nSize);
-      } else {
-        Serial.print("initialized at ");
-        Serial.println(nSize);
-      }
-      */
     };
 
 

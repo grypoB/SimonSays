@@ -1,11 +1,4 @@
-#include "control.h"
-
-static RGBConverter conv; 
-static int min_h, max_h; // from 360
-static int min_s, max_s; // from 100
-static int min_v, max_v; // from 100
-static double h,s,v;
-static unsigned char rgb[3];
+#include "Controller.h"
 
 
 void Controller::update(uint32_t now) {
@@ -210,26 +203,5 @@ void Controller::updateFlash() {
   
 }
 
-void Color::randHSV() {
-        // create a random color (in function of the max)
-        h = random(min_h, max_h+1);  
-        s = random(min_s, max_s+1);  
-        v = random(min_v, max_v+1);  
-
-        conv.hsvToRgb(h/360,s/100,v/100, rgb);
-
-        red   = rgb[0];
-        green = rgb[1];
-        blue  = rgb[2];
-}
-
-void Color::setHSV(int nMin_h, int nMax_h, int nMin_s, int nMax_s, int nMin_v, int nMax_v) {
-      min_h = nMin_h;
-      max_h = nMax_h;
-      min_s = nMin_s;
-      max_s = nMax_s;
-      min_v = nMin_v;
-      max_v = nMax_v;
-}
 
 
