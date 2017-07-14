@@ -2,6 +2,7 @@
 #define __COLOR_H__
 
 #include "Arduino.h"
+#include "RGBConverter.h"
 
 #define COLOR_MAX_H 360
 #define COLOR_MAX_S 100
@@ -14,25 +15,26 @@ class Color {
         Color();
         Color(uint8_t r, uint8_t g, uint8_t b);
 
-        void Color::set(uint8_t r, uint8_t g, uint8_t b);
+        void set(uint8_t r, uint8_t g, uint8_t b);
 
-        void Color::mix(Color color1, Color color2, double opacity);
+        void mix(Color color1, Color color2, double opacity);
+
         /* Fade the color from color1 to color2 from t=from to t=to
          * Caculated at t=at
          */
-        void Color::fade(Color color1, Color color2,
+        void fade(Color color1, Color color2,
                          uint32_t at, uint32_t from, uint32_t to);
 
 
-        void Color::setHSV(int16_t min_h, int16_t max_h,
+        void setHSV(int16_t min_h, int16_t max_h,
                            int16_t min_s, int16_t max_s,
                            int16_t min_v, int16_t max_v);
 
         // Foncions
         /* Random color in [0, max] for RGB
         */
-        void Color::rand(uint8_t max);
-        void Color::randHSV();
+        void rand(uint8_t max);
+        void randHSV();
     private:
         static int16_t _min_h, _max_h; // from 0 to COLOR_MAX_H
         static int16_t _min_s, _max_s; // from 0 to COLOR_MAX_S
