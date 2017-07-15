@@ -2,8 +2,9 @@
 
 #include "Controller.h"
 #include "Button.h"
+#include "Fsm.h"
 
-#define LENGTH 8
+#define STRIP_LENGTH 8
 #define BUTTON_PIN 9 // pin number
 #define LED_PIN 6 // pin number
 
@@ -21,9 +22,9 @@
 #define MIN_V 20
 #define MAX_V 30
 
-Color color_strip[LENGTH];
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LENGTH, LED_PIN, NEO_GRB + NEO_KHZ800);
-Controller controller = Controller(color_strip, LENGTH);
+Color color_strip[STRIP_LENGTH];
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LENGTH, LED_PIN, NEO_GRB + NEO_KHZ800);
+Controller controller = Controller(color_strip, STRIP_LENGTH);
 
 // Base colors
 Color red   = Color(255,0,0);
@@ -33,6 +34,7 @@ Color black = Color(0,255,0);
 
 
 Button butt = Button(BUTTON_PIN, DEBOUNCE);
+Fsm fsm     = Fsm(&butt);
 static int16_t press = 0;
 
 void setup() {
@@ -40,6 +42,7 @@ void setup() {
 
     strip.begin();
     butt.init();
+    //fsm.init();
 
     delay(1000);
 
@@ -54,17 +57,7 @@ void setup() {
 void loop() {
     uint32_t now = millis();
 
-    int16_t result = butt.update(now);
-
-    if(result == BUTTON_RELEASE) {
-        press++;
-        Serial.print("relea ");
-        Serial.println(press);
-    } else if (result == BUTTON_PRESS) {
-        press--;
-        Serial.print("press ");
-        Serial.println(press);
-    }
+    fsm.update(now);
 
     controller.update(now);
 
