@@ -61,7 +61,11 @@ void Color::rand(uint8_t max) {
 void Color::randHSV() {
     uint8_t rgb[3];
 
-    _converter.hsvToRgb((double) random(_min_h, _max_h+1)/COLOR_MAX_H,
+    double h = random(_min_h, _max_h+1);
+    if (h < 0) {
+        h += COLOR_MAX_H;
+    }
+    _converter.hsvToRgb(                                h/COLOR_MAX_H,
                         (double) random(_min_s, _max_s+1)/COLOR_MAX_S,
                         (double) random(_min_v, _max_v+1)/COLOR_MAX_V,
                         rgb);
