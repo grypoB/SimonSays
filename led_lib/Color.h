@@ -35,6 +35,10 @@ class Color {
         */
         void rand(uint8_t max);
         void randHSV();
+
+        uint8_t getR();
+        uint8_t getG();
+        uint8_t getB();
     private:
         static int16_t _min_h, _max_h; // from 0 to COLOR_MAX_H
         static int16_t _min_s, _max_s; // from 0 to COLOR_MAX_S

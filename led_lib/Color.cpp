@@ -1,6 +1,16 @@
 #include "Color.h"
 
 
+// Static varaible declaration
+int16_t Color::_min_h = 0;
+int16_t Color::_max_h = COLOR_MAX_H;
+int16_t Color::_min_s = 0;
+int16_t Color::_max_s = COLOR_MAX_S;
+int16_t Color::_min_v = 0;
+int16_t Color::_max_v = COLOR_MAX_V;
+RGBConverter Color::_converter;
+
+
 // Constructor
 Color::Color() : _r(0), _g(0), _b(0) {}
 Color::Color(uint8_t r, uint8_t g, uint8_t b) : _r(r), _g(g), _b(b)  {}
@@ -59,4 +69,17 @@ void Color::randHSV() {
     _r = rgb[0];
     _g = rgb[1];
     _b = rgb[2];
+}
+
+
+uint8_t Color::getR() {
+    return _r;
+}
+
+uint8_t Color::getG() {
+    return _g;
+}
+
+uint8_t Color::getB() {
+    return _b;
 }
