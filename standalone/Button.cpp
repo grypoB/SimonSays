@@ -4,7 +4,7 @@ Button::Button(uint16_t pin, uint32_t debounceTime)
     : _debounceTime(debounceTime), _pin(pin) {};
 
 void Button::init() {
-    pinMode(_pin, INPUT);
+    pinMode(_pin, INPUT_PULLUP);
     _state = digitalRead(_pin);
 }
 
