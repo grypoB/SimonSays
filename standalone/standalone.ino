@@ -3,6 +3,7 @@
 #include "Controller.h"
 #include "Button.h"
 #include "Fsm.h"
+#include "Output.h"
 
 #define STRIP_LENGTH 8
 #define BUTTON_PIN 9 // pin number
@@ -34,8 +35,8 @@ Color black = Color(0,255,0);
 
 
 Button butt = Button(BUTTON_PIN, DEBOUNCE);
-Fsm fsm     = Fsm(&butt);
-static int16_t press = 0;
+Output output = Output();
+Fsm fsm     = Fsm(&butt, &output);
 
 void setup() {
     Serial.begin(BAUD);
@@ -60,6 +61,8 @@ void loop() {
     fsm.update(now);
 
     controller.update(now);
+
+    output.update(now);
 
     update_strip(&strip, color_strip);
 }
