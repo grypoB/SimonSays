@@ -10,7 +10,7 @@ Fsm::Fsm(Button *pButt, Output *pOutput) {
 void Fsm::update(uint32_t nowTic) {
     int16_t buttonState = _pButt->update(nowTic);
 
-    if (!_pOutput->busy()) {
+    if (!(_pOutput->busy())) {
         switch(_state) {
             case IDLE:
                 _pOutput->idle();

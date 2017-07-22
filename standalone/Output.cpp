@@ -15,6 +15,7 @@
 
 #define DELAY_FLASH 100
 #define DELAY_NEXT_RANK_COMBI 100
+#define DELAY_GAME_START 1000
 
 namespace {
     // Base colors
@@ -67,6 +68,7 @@ void Output::update(uint32_t nowTic) {
 
     _pCont->update(nowTic);
     //Serial.println("u");
+    //sprintf(_buffer + strlen(_buffer), "u\n");
     return;
 }
 

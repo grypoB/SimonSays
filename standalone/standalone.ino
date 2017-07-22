@@ -7,7 +7,7 @@
 
 #define STRIP_LENGTH 20
 #define BUTTON_PIN 9 // pin number
-#define LED_PIN 6 // pin number
+#define PIN_STRIP 6 // pin number
 
 #define DEBOUNCE 40 // in ms
 
@@ -17,7 +17,7 @@
 char buffer[BUFFER_SIZE] = {0};
 
 Color color_strip[STRIP_LENGTH];
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LENGTH, LED_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LENGTH, PIN_STRIP, NEO_GRB + NEO_KHZ800);
 Controller controller = Controller(color_strip, STRIP_LENGTH);
 
 Button butt   = Button(BUTTON_PIN, DEBOUNCE);

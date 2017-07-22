@@ -105,7 +105,7 @@ void Controller::setEffectFlash(Color color, uint32_t duration) {
     effectColor = color;
     effectDuration = duration;
 
-    effectTic = nowTic;
+    effectTic = 0;
 }
 
 
