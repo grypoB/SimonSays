@@ -8,7 +8,7 @@ enum Output_state {OUTPUT_NONE, OUTPUT_IDLE, OUTPUT_DELAY};
 
 class Output {
     public:
-        Output(Controller *pCont);
+        Output(Controller *pCont, char *buffer);
 
         void update(uint32_t nowTic);
         bool busy();
@@ -27,6 +27,8 @@ class Output {
         Output_state _state;
         uint32_t _lastTic;
         uint32_t _delay;
+
+        char *_buffer;
 
         Color convertButton(int16_t butt);
         void wait(uint32_t delay);

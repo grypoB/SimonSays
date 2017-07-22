@@ -23,14 +23,16 @@ namespace {
     Color green = Color(0,255,0);
     Color purple = Color(161,0,255);
     Color blue  = Color(0,0,255);
-    Color black = Color(0,255,0);
+    Color black = Color(0,0,0);
     Color flashColor    = Color(255,255,255);
     Color nextRankColor = Color(255,208,0);
+    Color gameStartColor = Color(255,208,0);
 }
 
-Output::Output(Controller *pCont) {
+Output::Output(Controller *pCont, char *buffer) {
     _pCont = pCont;
     _state = OUTPUT_NONE;
+    _buffer = buffer;
 
     black.setHSV(MIN_H, MAX_H, MIN_S, MAX_S, MIN_V, MAX_V);
 }
@@ -64,12 +66,14 @@ void Output::update(uint32_t nowTic) {
     }
 
     _pCont->update(nowTic);
+    //Serial.println("u");
+    return;
 }
 
 void Output::idle() {
     if (_state != OUTPUT_IDLE) {
         _pCont->setAutoHSV(TRANSITION,STABLE);
-        Serial.println("IDLE");
+        sprintf(_buffer + strlen(_buffer), "IDLE\n");
     }
 
     _state = OUTPUT_IDLE;
@@ -77,39 +81,40 @@ void Output::idle() {
 
 
 void Output::game_start() {
-    Serial.println("Game start");
+    sprintf(_buffer + strlen(_buffer), "Game start\n");
 
     _pCont->setManual(black); 
-    _pCont->setEffectFlash(flashColor, DELAY_NEXT_RANK_COMBI);
+    _pCont->setEffectFlash(gameStartColor, DELAY_GAME_START);
 
-    wait(DELAY_NEXT_RANK_COMBI);
+    wait(DELAY_GAME_START);
 }
 
 void Output::button_press(int16_t butt, bool fake) {
     uint32_t delay = 0;
+
     if (fake) {
-        Serial.print("Fake ");
-        _pCont->setManual(convertButton(butt));
+        sprintf(_buffer + strlen(_buffer), "Fake ");
         delay = BUTTON_FAKE_DURATION;
     } else {
-        Serial.print("Pressed ");
+        sprintf(_buffer + strlen(_buffer), "Pressed ");
         delay = BUTTON_DURATION;
     }
 
-    Serial.println(butt);
-    _pCont->setManual(convertButton(butt));
+    sprintf(_buffer + strlen(_buffer), "%d \n", butt);
+    //_pCont->setManual(convertButton(butt));
 
     wait(delay);
 }
 
 void Output::flash() {
+    sprintf(_buffer + strlen(_buffer), "Flash !\n");
     _pCont->setEffectFlash(flashColor, DELAY_FLASH);
 
     wait(DELAY_FLASH);
 }
 
 void Output::end_of_combi() {
-    Serial.println("End of fake sequence");
+    sprintf(_buffer + strlen(_buffer), "End of fake sequence\n");
 
     _state = OUTPUT_NONE;
 }
@@ -117,30 +122,30 @@ void Output::end_of_combi() {
 void Output::next_combi_rank(bool correct) {
     uint32_t delay = 0;
 
-    _pCont->setManual(black);
+    //_pCont->setManual(black);
 
-    Serial.print("Selected ");
+    sprintf(_buffer + strlen(_buffer), "Selected ");
     if (correct) {
-        Serial.println("correct");
+        sprintf(_buffer + strlen(_buffer), "correct\n");
 
         delay = DELAY_NEXT_RANK_COMBI;
         _pCont->setEffectFlash(nextRankColor, DELAY_NEXT_RANK_COMBI);
     } else {
-        Serial.println("WRONG");
+        sprintf(_buffer + strlen(_buffer), "WRONG\n");
     }
 
     wait(delay);
 }
 
 void Output::win() {
-    Serial.println("WIN!");
+    sprintf(_buffer + strlen(_buffer), "WIN!\n");
 
     _state = OUTPUT_NONE;
 }
 
 
 void Output::game_over() {
-    Serial.println("Game over!");
+    sprintf(_buffer + strlen(_buffer), "Game Over!\n");
 
     _state = OUTPUT_NONE;
 }

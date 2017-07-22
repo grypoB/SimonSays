@@ -12,15 +12,17 @@
 #define DEBOUNCE 40 // in ms
 
 #define BAUD 9600 // serial baud rate
+#define BUFFER_SIZE 255 // size of print buffer
 
+char buffer[BUFFER_SIZE] = {0};
 
 Color color_strip[STRIP_LENGTH];
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LENGTH, LED_PIN, NEO_GRB + NEO_KHZ800);
 Controller controller = Controller(color_strip, STRIP_LENGTH);
 
-Button butt = Button(BUTTON_PIN, DEBOUNCE);
-Output output = Output(&controller);
-Fsm fsm     = Fsm(&butt, &output);
+Button butt   = Button(BUTTON_PIN, DEBOUNCE);
+Output output = Output(&controller, buffer);
+Fsm fsm       = Fsm(&butt, &output);
 
 void setup() {
     Serial.begin(BAUD);
@@ -29,7 +31,7 @@ void setup() {
     butt.init();
     //fsm.init();
 
-    delay(1000);
+    delay(500);
 
     Serial.println("Startup");
 
@@ -39,11 +41,16 @@ void setup() {
 void loop() {
     uint32_t now = millis();
 
+    buffer[0] = '\0';
+
     fsm.update(now);
 
     output.update(now);
+    //controller.update(now);
 
     update_strip(&strip, color_strip);
+
+    Serial.print(buffer);
 }
 
 void update_strip(Adafruit_NeoPixel *pStrip, Color color_strip[]) {
