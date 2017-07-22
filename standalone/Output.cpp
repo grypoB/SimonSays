@@ -144,3 +144,25 @@ void Output::game_over() {
 
     _state = OUTPUT_NONE;
 }
+
+Color Output::convertButton(int16_t butt) {
+    if (butt == -1) {
+        return white;
+    } else if (butt == 0) {
+        return red;
+    } else if (butt == 1) {
+        return green;
+    } else if (butt == 2) {
+        return purple;
+    } else if (butt == 3) {
+        return blue;
+    } else {
+        return black;
+    }
+}
+
+void Output::wait(uint32_t delay) {
+    _lastTic = 0;
+    _delay = delay;
+    _state = OUTPUT_DELAY;
+}

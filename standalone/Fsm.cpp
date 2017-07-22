@@ -15,7 +15,7 @@ void Fsm::update(uint32_t nowTic) {
             case IDLE:
                 _pOutput->idle();
                 if (buttonState == BUTTON_PRESS) {
-                    _pOutput->button_press(-1, false);
+                    _pOutput->game_start();
                     generateCombi();
                     _rankCombi = 0;
                     _state = TRUE_COMBI;
@@ -26,7 +26,7 @@ void Fsm::update(uint32_t nowTic) {
                     _pOutput->button_press(_combi[_rankCombi], true);
                     _rankCombi++;
                 } else if (_rankCombi == FSM_COMBI_LENGTH) {
-                    _pOutput->end_of_press();
+                    _pOutput->end_of_combi();
 
                     _buttSelect = -1;
                     _rankCombi = 0;
