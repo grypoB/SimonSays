@@ -6,6 +6,13 @@ Controller::Controller(Color nStrip[], int16_t nSize, Color nMainColor)
 void Controller::update(uint32_t now) {
     nowTic = now;
 
+    // For effects
+    if (effectTic == 0) {
+        // happens in case of lag
+        // some effects timer are set to 0 to insure they play in full
+        effectTic = nowTic;
+    }
+
     switch (mode) {
         case MODE_AUTO_HSV:
         case MODE_AUTO: updateAuto();
@@ -16,10 +23,10 @@ void Controller::update(uint32_t now) {
             break;
         case MODE_AUTO_HSV_SINGLE: updateAutoSingle();
             break;
-        case MODE_FILL_HSV:
+        case MODE_FILL_HSV: // kinda an effect
         case MODE_FILL_HSV_REVERSE: updateFillHSV();
             break;
-        case MODE_EMPTY:
+        case MODE_EMPTY: // kinda an effect
         case MODE_EMPTY_REVERSE: updateEmpty();
             break;
         case MODE_MANUAL: setColor(color1);
@@ -28,12 +35,6 @@ void Controller::update(uint32_t now) {
 
 
     if (effect != EFFECT_NONE) {
-        if (effectTic == 0) {
-            // happens in case of lag
-            // some effects timer are set to 0 to insure they play in full
-            effectTic = nowTic;
-        }
-
         switch (effect) {
             case EFFECT_BEAM:
             case EFFECT_BEAM_REVERSE: updateBeam();
@@ -137,7 +138,7 @@ void Controller::setFillHSV(uint16_t nTransition, uint16_t nStable, uint16_t spe
 
     for (int16_t i=0 ; i<size ; i++) {
         color1t[i].randHSV();
-        colort[i].set(0,0,0); // set black background
+        //colort[i].set(0,0,0); // set black background
     }
 }
 
