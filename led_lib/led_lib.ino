@@ -2,11 +2,11 @@
 #include "Controller.h"
 #include <Adafruit_NeoPixel.h>
 
-#define TOTAL_LENGTH 8
+#define TOTAL_LENGTH 20
 
 #define PIN_STRIP 6
 
-#define MAX 15
+#define MAX 20
 
 #define TRANSITION 1000
 #define STABLE     500
@@ -57,6 +57,7 @@ void runControllerFor(uint32_t delta) {
     while (now-start < delta) {
         ct.update(now);
         update_strip(&strip, color_strip);
+        delay(1); // Otherwise breaks on some low quality strips
         now = millis();
     }
 }
