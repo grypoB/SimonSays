@@ -30,6 +30,8 @@ class Output {
 
         char *_buffer;
 
+        bool _setBlackAfterDelay = false;
+
         Color convertButton(int16_t butt);
         void wait(uint32_t delay);
 };

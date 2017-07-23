@@ -56,6 +56,8 @@ void Fsm::generateCombi() {
 }
 
 void Fsm::updateUserCombi(int16_t buttonState, uint32_t nowTic) {
+    uint16_t timeout = FSM_SELECT_TIMEOUT;
+
     if (buttonState == BUTTON_PRESS) {
         _buttSelect = (_buttSelect+1) % FSM_MAX_SELECT;
 
@@ -64,7 +66,12 @@ void Fsm::updateUserCombi(int16_t buttonState, uint32_t nowTic) {
         _lastSelectTic = nowTic;
     }
 
-    if (nowTic - _lastSelectTic > FSM_SELECT_TIMEOUT) {
+    if (_buttSelect == -1) {
+        timeout = FSM_INITIAL_SELECT_TIMEOUT;
+    }
+
+
+    if (nowTic-_lastSelectTic > timeout) {
 
         if (_buttSelect == _combi[_rankCombi]) {
             _pOutput->next_combi_rank(true);

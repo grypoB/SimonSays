@@ -34,7 +34,6 @@ void setup() {
     delay(500);
 
     Serial.println("Startup");
-
 }
 
 
