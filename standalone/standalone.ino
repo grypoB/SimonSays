@@ -45,11 +45,12 @@ void loop() {
     fsm.update(now);
 
     output.update(now);
-    //controller.update(now);
 
     update_strip(&strip, color_strip);
 
     Serial.print(buffer);
+
+    delayMicroseconds(500); // Delay to insure enough time in between strips update
 }
 
 void update_strip(Adafruit_NeoPixel *pStrip, Color color_strip[]) {
