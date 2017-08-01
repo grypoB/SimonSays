@@ -50,12 +50,43 @@ namespace {
         int beatPeriod = 500;
     }
 
+    namespace LostWoods { // Lost woods, first 16 measures, 42 notes
+        int melody[] = {
+            F5,A6,B6,F5,A6,B6,
+            F5,A6,B6,E6,D6,C6,D6,
+            B6,G5,E5,0,D5,
+            E5,G5,D5,0,
+
+            F5,A6,B6,F5,A6,B6,
+            F5,A6,B6,E2,D6,C6,D6,
+            B6,G5,E6,0,B6,
+            G5,D5,E6,0
+        };
+
+        int noteDurations[] = {
+            8,8,4,8,8,4,
+            8,8,8,8,4,8,8,
+            8,8,2,8,8,
+            8,8,2,4,
+
+            8,8,4,8,8,4,
+            8,8,8,8,4,8,8,
+            8,8,2,8,8,
+            8,8,2,4
+        };
+
+        int melodyLength = 44;
+        int beatPeriod = 1100;
+    }
+
     Song song1Up      = Song(OneUp::melody, OneUp::noteDurations,
                              OneUp::melodyLength, OneUp::beatPeriod);
     Song songCoin     = Song(Coin::melody, Coin::noteDurations,
                              Coin::melodyLength, Coin::beatPeriod);
     Song songGameOver = Song(GameOver::melody, GameOver::noteDurations,
                              GameOver::melodyLength, GameOver::beatPeriod);
+    Song songLostWoods = Song(LostWoods::melody, LostWoods::noteDurations,
+                             LostWoods::melodyLength, LostWoods::beatPeriod);
 }
 
 
@@ -66,7 +97,9 @@ Song::Song(int *pMelody, int* pNoteDurations, int pMelodyLength, int pBeatPeriod
       melodyLength(pMelodyLength), beatPeriod(pBeatPeriod) {};
 
 
-Music::Music(int pin) : pin(pin) {}
+Music::Music(int pin) : pin(pin) {
+    playing = false;
+}
 
 
 void Music::updatePlay(uint32_t now) {
@@ -109,6 +142,9 @@ void Music::playSong(SongName name, uint32_t now) {
         break;
         case SONG_GAME_OVER:
             song = songGameOver;
+        break;
+        case SONG_LOST_WOODS:
+            song = songLostWoods;
         break;
     }
 }

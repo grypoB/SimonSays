@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #define PAUSE_INTER_NOTES_RATIO 0.3
 
-enum SongName {SONG_1UP, SONG_COIN, SONG_GAME_OVER};
+enum SongName {SONG_1UP, SONG_COIN, SONG_GAME_OVER, SONG_LOST_WOODS};
 
 class Song {
     public:
@@ -34,7 +34,7 @@ class Music {
         bool playing;
         bool startedTone;
         int currNote;
-        int startNoteTic; 
+        uint32_t startNoteTic; 
 };
 
 
