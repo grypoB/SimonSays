@@ -5,9 +5,11 @@
 #include "Fsm.h"
 #include "Output.h"
 
-#define STRIP_LENGTH 20
-#define BUTTON_PIN 9 // pin number
+#define STRIP_LENGTH  20
+#define STRIP_LENGTH2 15
+#define BUTTON_PIN 5 // pin number
 #define PIN_STRIP 6 // pin number
+#define PIN_STRIP2 8 // pin number
 
 #define DEBOUNCE 40 // in ms
 
@@ -17,8 +19,11 @@
 char buffer[BUFFER_SIZE] = {0};
 
 Color color_strip[STRIP_LENGTH];
+Color color_strip2[STRIP_LENGTH];
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LENGTH, PIN_STRIP, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel back_strip = Adafruit_NeoPixel(STRIP_LENGTH2, PIN_STRIP2, NEO_GRB + NEO_KHZ800);
 Controller controller = Controller(color_strip, STRIP_LENGTH);
+Controller back_ctrl = Controller(color_strip2, STRIP_LENGTH);
 
 Button butt   = Button(BUTTON_PIN, DEBOUNCE);
 Output output = Output(&controller, buffer);
@@ -28,12 +33,14 @@ void setup() {
     Serial.begin(BAUD);
 
     strip.begin();
+    back_strip.begin();
     butt.init();
     //fsm.init();
 
     delay(500);
 
     Serial.println("Startup");
+    back_ctrl.setAutoHSV_single(700,300);
 }
 
 
@@ -45,8 +52,10 @@ void loop() {
     fsm.update(now);
 
     output.update(now);
+    back_ctrl.update(now);
 
     update_strip(&strip, color_strip);
+    update_strip(&back_strip, color_strip2);
 
     Serial.print(buffer);
 
